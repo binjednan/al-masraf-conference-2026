@@ -4,150 +4,221 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>مؤتمر المصرف للمالية الإسلامية 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap');
-
 :root {
-  --bg-primary: #0a0f1a;
-  --bg-secondary: #0d1525;
-  --bg-card: rgba(15, 25, 45, 0.85);
-  --bg-card-hover: rgba(20, 35, 60, 0.95);
-  --accent-green: #2ecc71;
-  --accent-emerald: #00c9a7;
-  --accent-gold: #c9a84c;
-  --text-primary: #f0f0f0;
-  --text-secondary: #a0b0c0;
-  --text-muted: #607080;
-  --border-subtle: rgba(46, 204, 113, 0.15);
-  --border-glow: rgba(46, 204, 113, 0.4);
-  --glass: rgba(255,255,255,0.04);
-  --shadow-card: 0 8px 32px rgba(0,0,0,0.4);
-  --radius: 16px;
-  --radius-sm: 10px;
+  --bg-deep: #050a12;
+  --bg-primary: #0a1120;
+  --bg-secondary: #0d1628;
+  --bg-card: rgba(13, 22, 40, 0.75);
+  --bg-card-hover: rgba(18, 30, 55, 0.9);
+  --accent: #1db954;
+  --accent-light: #22d966;
+  --accent-dim: rgba(29, 185, 84, 0.12);
+  --accent-glow: rgba(29, 185, 84, 0.25);
+  --gold: #c9a84c;
+  --gold-dim: rgba(201, 168, 76, 0.15);
+  --text-primary: #eaf0f6;
+  --text-secondary: #8a9bb5;
+  --text-muted: #4a5f7a;
+  --border: rgba(29, 185, 84, 0.1);
+  --border-hover: rgba(29, 185, 84, 0.3);
+  --glass: rgba(255,255,255,0.03);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --font: 'IBM Plex Sans Arabic', system-ui, sans-serif;
 }
 
-* { margin:0; padding:0; box-sizing:border-box; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: var(--accent-green) var(--bg-primary);
+  scrollbar-color: var(--accent) var(--bg-deep);
 }
 
 body {
-  font-family: 'Tajawal', sans-serif;
-  background: var(--bg-primary);
+  font-family: var(--font);
+  background: var(--bg-deep);
   color: var(--text-primary);
   overflow-x: hidden;
   min-height: 100vh;
-  line-height: 1.7;
+  line-height: 1.85;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ===== MULTI-LAYER BACKGROUND (PDF MATCH) ===== */
-.bg-fixed {
+/* ===== READING PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  z-index: 9999;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* ===== ISLAMIC GEOMETRIC PATTERN OVERLAY ===== */
+.geo-pattern {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
   z-index: 0;
-  overflow: hidden;
   pointer-events: none;
+  opacity: 0.025;
+}
+
+/* ===== MULTI-LAYER BACKGROUND ===== */
+.bg-layer {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
 }
 
 .bg-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(160deg, #0a1628 0%, #081018 30%, #0d1a2a 60%, #091220 100%);
+  background:
+    radial-gradient(ellipse 80% 60% at 85% 10%, rgba(29,185,84,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 50% at 15% 90%, rgba(29,185,84,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(13,22,40,0.8) 0%, transparent 70%),
+    linear-gradient(160deg, #050a12 0%, #0a1428 35%, #071018 65%, #050a12 100%);
 }
 
-/* Green geometric mesh - top right */
-.bg-mesh-tr {
+.bg-mesh {
   position: absolute;
-  top: -20%; right: -15%;
-  width: 70vw; height: 70vw;
-  max-width: 900px; max-height: 900px;
-  background: radial-gradient(ellipse at center, rgba(46,204,113,0.12) 0%, rgba(0,201,167,0.06) 35%, transparent 70%);
   border-radius: 50%;
   will-change: transform;
+  filter: blur(1px);
 }
 
-/* Green geometric mesh - bottom left */
-.bg-mesh-bl {
-  position: absolute;
-  bottom: -25%; left: -15%;
-  width: 60vw; height: 60vw;
-  max-width: 800px; max-height: 800px;
-  background: radial-gradient(ellipse at center, rgba(46,204,113,0.08) 0%, rgba(0,180,120,0.04) 40%, transparent 70%);
-  border-radius: 50%;
-  will-change: transform;
+.bg-mesh.tr {
+  top: -25%; right: -20%;
+  width: 65vw; height: 65vw;
+  max-width: 850px; max-height: 850px;
+  background: radial-gradient(ellipse, rgba(29,185,84,0.1) 0%, rgba(29,185,84,0.03) 40%, transparent 70%);
 }
 
-/* Green vignette at top edge */
-.bg-vignette-top {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 300px;
-  background: linear-gradient(180deg, rgba(46,204,113,0.06) 0%, transparent 100%);
+.bg-mesh.bl {
+  bottom: -30%; left: -20%;
+  width: 55vw; height: 55vw;
+  max-width: 750px; max-height: 750px;
+  background: radial-gradient(ellipse, rgba(29,185,84,0.06) 0%, transparent 65%);
 }
 
-/* Geometric lines overlay */
-.bg-lines {
-  position: absolute;
-  inset: 0;
-  opacity: 0.04;
-  background-image:
-    repeating-linear-gradient(60deg, transparent, transparent 80px, rgba(46,204,113,0.3) 80px, rgba(46,204,113,0.3) 81px),
-    repeating-linear-gradient(-60deg, transparent, transparent 80px, rgba(46,204,113,0.3) 80px, rgba(46,204,113,0.3) 81px),
-    repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(46,204,113,0.2) 80px, rgba(46,204,113,0.2) 81px);
-  will-change: transform;
-}
-
-/* Particle canvas */
 #particleCanvas {
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
 }
 
-/* Dubai skyline silhouette */
 .bg-skyline {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 220px;
+  height: 200px;
   will-change: transform;
+  opacity: 0.7;
 }
 
-@media(max-width: 768px) {
-  .bg-skyline { height: 140px; }
-  .bg-mesh-tr { width: 90vw; height: 90vw; top: -30%; right: -30%; }
-  .bg-mesh-bl { width: 80vw; height: 80vw; bottom: -30%; left: -30%; }
+@media(max-width:768px) {
+  .bg-skyline { height: 120px; }
 }
 
-/* ===== GLOBAL GLOW CURSOR ===== */
+/* ===== CURSOR GLOW ===== */
 .cursor-glow {
   position: fixed;
-  width: 400px; height: 400px;
+  width: 500px; height: 500px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(46,204,113,0.07) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(29,185,84,0.06) 0%, transparent 65%);
   pointer-events: none;
   z-index: 1;
   transform: translate(-50%, -50%);
-  transition: left 0.3s ease-out, top 0.3s ease-out;
+  transition: left 0.25s cubic-bezier(0.22,1,0.36,1), top 0.25s cubic-bezier(0.22,1,0.36,1);
+  will-change: left, top;
 }
 
-@media(max-width: 768px) {
-  .cursor-glow { display: none; }
+@media(max-width:768px) { .cursor-glow { display:none; } }
+
+/* ===== FIXED CONTROLS ===== */
+.fixed-controls {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
 }
+
+.ctrl-btn {
+  padding: 8px 18px;
+  border-radius: 50px;
+  background: rgba(5,10,18,0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+  white-space: nowrap;
+}
+
+.ctrl-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  transform: translateY(-1px);
+}
+
+/* ===== SCROLL TO TOP ===== */
+.scroll-top {
+  position: fixed;
+  bottom: 24px; left: 24px;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: rgba(29,185,84,0.12);
+  border: 1px solid rgba(29,185,84,0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  opacity: 0; transform: translateY(20px) scale(0.8);
+  transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+  pointer-events: none;
+}
+
+.scroll-top.visible {
+  opacity: 1; transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+.scroll-top:hover {
+  background: var(--accent-glow);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(29,185,84,0.2);
+}
+
+.scroll-top svg { width: 20px; height: 20px; fill: var(--accent); }
 
 /* ===== MAIN WRAPPER ===== */
-.main-wrapper {
+.main-wrap {
   position: relative;
   z-index: 2;
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 0 20px;
 }
 
-/* ===== HERO SECTION ===== */
+/* ===== HERO ===== */
 .hero {
   min-height: 100vh;
   display: flex;
@@ -155,696 +226,828 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 60px 20px;
+  padding: 80px 20px 60px;
   position: relative;
 }
 
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(46,204,113,0.1);
-  border: 1px solid rgba(46,204,113,0.25);
+  gap: 10px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(29,185,84,0.2);
   border-radius: 50px;
   padding: 8px 24px;
-  font-size: 0.85rem;
-  color: var(--accent-green);
-  margin-bottom: 24px;
-  backdrop-filter: blur(10px);
-  animation: fadeInDown 0.8s ease-out;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 28px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0; transform: translateY(-20px);
 }
 
-.hero-badge .dot {
+.hero-badge .pulse {
   width: 8px; height: 8px;
-  background: var(--accent-green);
+  background: var(--accent);
   border-radius: 50%;
-  animation: pulse-dot 2s ease-in-out infinite;
+  animation: pulseDot 2s ease-in-out infinite;
 }
 
-@keyframes pulse-dot {
-  0%,100% { opacity:1; transform:scale(1); }
-  50% { opacity:0.4; transform:scale(0.7); }
+@keyframes pulseDot {
+  0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(29,185,84,0.4); }
+  50% { opacity:0.6; box-shadow: 0 0 0 6px rgba(29,185,84,0); }
 }
 
-.hero-organizers {
+.hero-org {
   font-size: 1rem;
   color: var(--text-secondary);
-  margin-bottom: 12px;
-  animation: fadeInDown 0.8s ease-out 0.1s both;
+  margin-bottom: 16px;
+  font-weight: 400;
+  opacity: 0; transform: translateY(-15px);
 }
 
 .hero-title {
-  font-size: clamp(1.6rem, 4.5vw, 3rem);
-  font-weight: 900;
-  line-height: 1.35;
-  margin-bottom: 16px;
-  background: linear-gradient(135deg, #ffffff, #2ecc71, #00c9a7);
+  font-size: clamp(1.5rem, 4.2vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-light) 50%, var(--accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: fadeInDown 0.8s ease-out 0.2s both;
+  opacity: 0; transform: translateY(-10px);
 }
 
 .hero-subtitle {
-  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
-  color: var(--accent-gold);
-  font-weight: 700;
-  margin-bottom: 32px;
-  animation: fadeInDown 0.8s ease-out 0.35s both;
+  font-size: clamp(1.05rem, 2.2vw, 1.45rem);
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 40px;
+  opacity: 0; transform: translateY(-8px);
 }
 
 .hero-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
   justify-content: center;
-  margin-bottom: 40px;
-  animation: fadeInUp 0.8s ease-out 0.5s both;
+  margin-bottom: 48px;
+  opacity: 0; transform: translateY(15px);
 }
 
 .meta-chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: var(--glass);
-  border: 1px solid var(--border-subtle);
-  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-radius: 50px;
-  padding: 10px 24px;
-  font-size: 0.95rem;
+  padding: 12px 24px;
+  font-size: 0.9rem;
   color: var(--text-primary);
-  transition: all 0.35s ease;
+  transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
 }
 
 .meta-chip:hover {
-  border-color: var(--border-glow);
-  background: rgba(46,204,113,0.08);
-  transform: translateY(-2px);
+  border-color: var(--border-hover);
+  background: var(--accent-dim);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(29,185,84,0.08);
 }
 
-.meta-chip svg {
-  width: 18px; height: 18px;
-  fill: var(--accent-green);
-  flex-shrink: 0;
+.meta-chip svg { width: 18px; height: 18px; fill: var(--accent); flex-shrink: 0; }
+
+/* ===== COUNTDOWN ===== */
+.countdown {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 48px;
+  opacity: 0; transform: translateY(15px);
 }
+
+.cd-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 72px;
+}
+
+.cd-num {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--accent-light);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.3s;
+}
+
+.cd-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 6px;
+}
+
+.cd-sep {
+  font-size: 2rem;
+  color: var(--text-muted);
+  align-self: flex-start;
+  margin-top: 4px;
+  opacity: 0.5;
+  animation: blinkSep 1s ease-in-out infinite;
+}
+
+@keyframes blinkSep { 0%,100% { opacity:0.5; } 50% { opacity:0.1; } }
 
 .hero-scroll {
   position: absolute;
   bottom: 30px;
-  animation: bounce 2s ease-in-out infinite;
   cursor: pointer;
+  animation: heroFloat 2.5s ease-in-out infinite;
+  opacity: 0;
 }
 
-.hero-scroll svg { width:28px; height:28px; fill: var(--accent-green); opacity:0.6; }
+.hero-scroll svg { width:28px; height:28px; fill: var(--accent); opacity:0.5; }
 
-@keyframes bounce {
+@keyframes heroFloat {
   0%,100% { transform:translateY(0); }
-  50% { transform:translateY(10px); }
+  50% { transform:translateY(12px); }
 }
 
-/* ===== NAV PILLS ===== */
-.nav-sticky {
+/* ===== STICKY NAV ===== */
+.sticky-nav {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(10,15,26,0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-subtle);
-  padding: 12px 0;
-  margin-bottom: 40px;
+  background: rgba(5,10,18,0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+  margin-bottom: 48px;
+  transition: box-shadow 0.3s;
 }
+
+.sticky-nav.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.4); }
 
 .nav-inner {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   overflow-x: auto;
   padding: 0 16px;
   scrollbar-width: none;
   justify-content: center;
   flex-wrap: wrap;
 }
+
 .nav-inner::-webkit-scrollbar { display:none; }
 
 .nav-pill {
   white-space: nowrap;
-  padding: 8px 20px;
+  padding: 9px 22px;
   border-radius: 50px;
   border: 1px solid transparent;
-  background: var(--glass);
-  color: var(--text-secondary);
-  font-size: 0.85rem;
-  font-weight: 500;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: inherit;
+  transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+  font-family: var(--font);
+  position: relative;
 }
 
-.nav-pill:hover, .nav-pill.active {
-  background: rgba(46,204,113,0.12);
-  border-color: var(--accent-green);
-  color: var(--accent-green);
+.nav-pill:hover {
+  color: var(--text-secondary);
+  background: var(--glass);
 }
 
-/* ===== SEARCH BAR ===== */
-.search-container {
-  margin-bottom: 40px;
-  padding: 0 16px;
+.nav-pill.active {
+  background: var(--accent-dim);
+  border-color: rgba(29,185,84,0.25);
+  color: var(--accent);
+}
+
+/* ===== SEARCH ===== */
+.search-wrap {
+  margin-bottom: 48px;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .search-box {
   position: relative;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
 .search-box input {
   width: 100%;
-  padding: 14px 20px 14px 52px;
+  padding: 15px 22px 15px 52px;
   border-radius: 50px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border);
   background: var(--bg-card);
   color: var(--text-primary);
-  font-size: 1rem;
-  font-family: inherit;
+  font-size: 0.92rem;
+  font-family: var(--font);
   outline: none;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .search-box input:focus {
-  border-color: var(--accent-green);
-  box-shadow: 0 0 20px rgba(46,204,113,0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(29,185,84,0.08), 0 8px 30px rgba(0,0,0,0.2);
 }
 
 .search-box input::placeholder { color: var(--text-muted); }
 
-.search-box .search-icon {
+.search-icon {
   position: absolute;
-  right: auto;
-  left: 18px;
-  top: 50%;
+  left: 20px; top: 50%;
   transform: translateY(-50%);
-  width: 20px; height: 20px;
+  width: 18px; height: 18px;
   fill: var(--text-muted);
   transition: fill 0.3s;
+  pointer-events: none;
 }
 
-.search-box input:focus ~ .search-icon { fill: var(--accent-green); }
+.search-box input:focus ~ .search-icon { fill: var(--accent); }
 
-/* ===== SECTION HEADERS ===== */
-.section-header {
+/* ===== SECTION HEADER ===== */
+.sec-head {
   text-align: center;
-  margin-bottom: 40px;
-  padding-top: 80px;
-  margin-top: -80px;
+  margin-bottom: 48px;
+  padding-top: 100px;
+  margin-top: -100px;
 }
 
-.section-header h2 {
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  font-weight: 800;
-  margin-bottom: 8px;
-  color: var(--text-primary);
+.sec-head h2 {
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  font-weight: 700;
+  margin-bottom: 12px;
+  position: relative;
+  display: inline-block;
 }
 
-.section-header .line {
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent-green), var(--accent-emerald));
+.sec-head .accent-line {
+  width: 50px; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
   margin: 0 auto;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
-/* ===== OBJECTIVES GRID ===== */
-.objectives-grid {
+.sec-head .sec-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+  font-weight: 400;
+}
+
+/* ===== SCROLL REVEAL ===== */
+.sr { opacity: 0; transform: translateY(50px); }
+.sr.visible { opacity: 1; transform: translateY(0); transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1); }
+.sr-left { opacity: 0; transform: translateX(-50px); }
+.sr-left.visible { opacity: 1; transform: translateX(0); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.sr-right { opacity: 0; transform: translateX(50px); }
+.sr-right.visible { opacity: 1; transform: translateX(0); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+.sr-scale { opacity: 0; transform: scale(0.85); }
+.sr-scale.visible { opacity: 1; transform: scale(1); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); }
+
+/* ===== OBJECTIVES - BENTO GRID ===== */
+.obj-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
-  margin-bottom: 60px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 80px;
+}
+
+.obj-grid .obj-card:nth-child(1) { grid-column: span 2; }
+.obj-grid .obj-card:nth-child(4) { grid-column: span 2; }
+
+@media(max-width:900px) {
+  .obj-grid { grid-template-columns: repeat(2, 1fr); }
+  .obj-grid .obj-card:nth-child(1),
+  .obj-grid .obj-card:nth-child(4) { grid-column: span 1; }
+}
+
+@media(max-width:600px) {
+  .obj-grid { grid-template-columns: 1fr; }
 }
 
 .obj-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 28px;
+  padding: 28px 26px;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
-  transform-style: preserve-3d;
-  will-change: transform;
+  transition: all 0.5s cubic-bezier(0.22,1,0.36,1);
   cursor: default;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .obj-card::before {
   content: '';
   position: absolute;
   top: 0; right: 0;
-  width: 4px; height: 100%;
-  background: linear-gradient(180deg, var(--accent-green), var(--accent-emerald));
-  border-radius: 0 var(--radius) var(--radius) 0;
+  width: 100%; height: 3px;
+  background: linear-gradient(90deg, var(--accent), transparent);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.4s;
 }
 
 .obj-card:hover::before { opacity: 1; }
 
 .obj-card:hover {
+  border-color: var(--border-hover);
   background: var(--bg-card-hover);
-  border-color: var(--border-glow);
-  box-shadow: 0 12px 40px rgba(46,204,113,0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(29,185,84,0.06), 0 4px 12px rgba(0,0,0,0.3);
 }
 
-.obj-card .obj-num {
+.obj-num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  background: rgba(46,204,113,0.1);
-  color: var(--accent-green);
-  font-weight: 800;
-  font-size: 0.9rem;
-  margin-bottom: 14px;
+  width: 38px; height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.88rem;
+  margin-bottom: 16px;
 }
 
 .obj-card p {
   color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.8;
+  font-size: 0.92rem;
+  line-height: 1.85;
 }
 
 /* ===== TIMELINE ===== */
+.timeline-section { margin-bottom: 80px; }
+
 .timeline {
   position: relative;
-  margin-bottom: 60px;
+  padding: 0 0 20px;
 }
 
 .timeline::before {
   content: '';
   position: absolute;
-  right: 50%;
+  right: 24px;
   top: 0; bottom: 0;
   width: 2px;
-  background: linear-gradient(180deg, var(--accent-green), var(--accent-emerald), transparent);
-  transform: translateX(50%);
+  background: linear-gradient(180deg, var(--accent) 0%, rgba(29,185,84,0.2) 80%, transparent 100%);
 }
 
-@media(max-width:768px) {
-  .timeline::before { right: 20px; transform: none; }
+@media(min-width:769px) {
+  .timeline::before { right: 50%; transform: translateX(50%); }
 }
 
-.timeline-item {
+.tl-item {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   position: relative;
-  opacity: 0;
-  animation: fadeInUp 0.6s ease-out forwards;
 }
 
-.timeline-item:nth-child(odd) { flex-direction: row-reverse; }
-
-@media(max-width:768px) {
-  .timeline-item, .timeline-item:nth-child(odd) {
-    flex-direction: row;
-    padding-right: 50px;
+@media(min-width:769px) {
+  .tl-item:nth-child(odd) { flex-direction: row-reverse; padding-left: calc(50% + 30px); padding-right: 0; }
+  .tl-item:nth-child(even) { padding-right: calc(50% + 30px); }
+  .tl-item .tl-dot {
+    position: absolute;
+    right: 50%;
+    transform: translateX(50%);
   }
 }
 
-.timeline-time {
-  flex: 0 0 140px;
-  text-align: center;
-  padding: 8px 16px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--accent-green);
-  background: rgba(46,204,113,0.08);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-subtle);
-  direction: ltr;
-}
-
 @media(max-width:768px) {
-  .timeline-time {
-    flex: 0 0 auto;
-    font-size: 0.75rem;
-    padding: 6px 10px;
-  }
+  .tl-item { padding-right: 54px; }
 }
 
-.timeline-dot {
-  flex: 0 0 20px;
-  width: 20px; height: 20px;
-  background: var(--bg-primary);
-  border: 3px solid var(--accent-green);
+.tl-dot {
+  flex-shrink: 0;
+  width: 14px; height: 14px;
+  background: var(--bg-deep);
+  border: 3px solid var(--accent);
   border-radius: 50%;
-  margin: 6px 16px;
-  position: relative;
+  margin: 10px 0;
   z-index: 2;
   transition: all 0.3s;
+  position: absolute;
+  right: 18px;
 }
 
-.timeline-item:hover .timeline-dot {
-  background: var(--accent-green);
-  box-shadow: 0 0 16px rgba(46,204,113,0.5);
+.tl-item:hover .tl-dot {
+  background: var(--accent);
+  box-shadow: 0 0 18px var(--accent-glow);
+  transform: scale(1.3);
 }
 
-@media(max-width:768px) {
-  .timeline-dot {
-    position: absolute;
-    right: 11px;
-    margin: 6px 0;
-  }
+@media(min-width:769px) {
+  .tl-dot { right: auto; }
 }
 
-.timeline-content {
+.tl-card {
   flex: 1;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px 24px;
-  transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
-  transform-style: preserve-3d;
-  will-change: transform;
+  padding: 18px 22px;
+  transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-.timeline-content:hover {
+.tl-card:hover {
+  border-color: var(--border-hover);
   background: var(--bg-card-hover);
-  border-color: var(--border-glow);
-  box-shadow: 0 8px 30px rgba(46,204,113,0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(29,185,84,0.06);
 }
 
-.timeline-content h4 {
-  font-size: 1rem;
+.tl-time {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 50px;
+  background: var(--accent-dim);
+  font-size: 0.78rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--accent);
+  margin-bottom: 8px;
+  direction: ltr;
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-card h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
   margin-bottom: 6px;
 }
 
-.timeline-content p {
-  font-size: 0.88rem;
+.tl-card p {
+  font-size: 0.84rem;
   color: var(--text-secondary);
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
-/* ===== SESSION CARDS ===== */
-.sessions-container {
+/* ===== SESSIONS - TAB SYSTEM ===== */
+.sessions-section { margin-bottom: 80px; }
+
+.session-tabs {
   display: flex;
-  flex-direction: column;
-  gap: 28px;
-  margin-bottom: 60px;
+  gap: 8px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
 }
 
-.session-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius);
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
-  transform-style: preserve-3d;
-  will-change: transform;
-}
+.session-tabs::-webkit-scrollbar { display: none; }
 
-.session-card:hover {
-  border-color: var(--border-glow);
-  box-shadow: var(--shadow-card), 0 0 40px rgba(46,204,113,0.06);
-}
-
-.session-header {
-  padding: 24px 28px;
-  background: linear-gradient(135deg, rgba(46,204,113,0.08), rgba(0,201,167,0.04));
-  border-bottom: 1px solid var(--border-subtle);
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-}
-
-.session-header:hover { background: linear-gradient(135deg, rgba(46,204,113,0.12), rgba(0,201,167,0.06)); }
-
-.session-header h3 {
-  font-size: clamp(1rem, 2.2vw, 1.25rem);
-  font-weight: 800;
-  color: var(--accent-green);
-  flex: 1;
-}
-
-.session-time-badge {
-  flex-shrink: 0;
-  padding: 6px 16px;
-  border-radius: 50px;
-  background: rgba(46,204,113,0.1);
-  border: 1px solid rgba(46,204,113,0.2);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--accent-green);
-  direction: ltr;
+.stab {
   white-space: nowrap;
-}
-
-.session-toggle {
-  width: 28px; height: 28px;
-  fill: var(--accent-green);
-  transition: transform 0.4s ease;
-  flex-shrink: 0;
-}
-
-.session-card.open .session-toggle { transform: rotate(180deg); }
-
-.session-body {
-  max-height: 0;
+  padding: 10px 24px;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+  font-family: var(--font);
+  position: relative;
   overflow: hidden;
-  transition: max-height 0.5s cubic-bezier(0.23,1,0.32,1);
 }
 
-.session-card.open .session-body { max-height: 2000px; }
+.stab::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: 0; height: 2px;
+  background: var(--accent);
+  transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+  transform: translateX(-50%);
+}
 
-.session-body-inner { padding: 24px 28px; }
+.stab:hover {
+  color: var(--text-secondary);
+  border-color: rgba(29,185,84,0.15);
+}
 
-.session-topics { margin-bottom: 24px; }
-.session-topics h4 {
-  font-size: 0.9rem;
+.stab.active {
+  background: var(--accent-dim);
+  border-color: rgba(29,185,84,0.3);
+  color: var(--accent);
+}
+
+.stab.active::before { width: 60%; }
+
+.session-panel {
+  display: none;
+  animation: fadePanel 0.45s cubic-bezier(0.22,1,0.36,1);
+}
+
+.session-panel.active { display: block; }
+
+@keyframes fadePanel {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sp-header {
+  background: linear-gradient(135deg, rgba(29,185,84,0.06), rgba(29,185,84,0.02));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 30px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sp-header::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(29,185,84,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.sp-header h3 {
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  font-weight: 700;
+  color: var(--accent-light);
+  margin-bottom: 6px;
+}
+
+.sp-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  direction: ltr;
+}
+
+.sp-time svg { width: 14px; height: 14px; fill: var(--text-muted); }
+
+/* Topics */
+.topics-block {
+  margin-bottom: 28px;
+}
+
+.topics-label {
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
+  letter-spacing: 1.5px;
+  margin-bottom: 16px;
 }
 
-.topic-item {
+.topic-row {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
-  color: var(--text-secondary);
-  font-size: 0.92rem;
-  line-height: 1.7;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.025);
+  transition: padding-right 0.3s;
 }
 
-.topic-item:last-child { border-bottom: none; }
+.topic-row:last-child { border-bottom: none; }
 
-.topic-num {
+.topic-row:hover { padding-right: 8px; }
+
+.topic-idx {
   flex-shrink: 0;
-  width: 26px; height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
   border-radius: 8px;
-  background: rgba(46,204,113,0.08);
-  color: var(--accent-green);
-  font-size: 0.75rem;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 0.72rem;
   font-weight: 700;
 }
 
-.speakers-section h4 {
+.topic-row span:not(.topic-idx) {
+  color: var(--text-secondary);
   font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+/* Speakers */
+.speakers-label {
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 16px;
+  letter-spacing: 1.5px;
+  margin-bottom: 18px;
 }
 
 .speakers-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 14px;
 }
 
-.speaker-chip {
+@media(max-width:600px) { .speakers-grid { grid-template-columns: 1fr; } }
+
+.speaker-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
-  border-radius: var(--radius-sm);
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: var(--radius);
   background: var(--glass);
   border: 1px solid rgba(255,255,255,0.04);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+  cursor: default;
 }
 
-.speaker-chip:hover {
-  background: rgba(46,204,113,0.06);
-  border-color: rgba(46,204,113,0.15);
-  transform: translateX(-4px);
+.speaker-card:hover {
+  background: var(--accent-dim);
+  border-color: rgba(29,185,84,0.15);
+  transform: translateX(-6px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
-.speaker-avatar {
-  width: 44px; height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(46,204,113,0.15), rgba(0,201,167,0.1));
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.speaker-card.chair {
+  border-color: var(--gold-dim);
+  background: rgba(201,168,76,0.04);
+}
+
+.speaker-card.chair:hover {
+  border-color: rgba(201,168,76,0.3);
+  background: rgba(201,168,76,0.08);
+}
+
+.sp-avatar {
   flex-shrink: 0;
-  font-size: 1.1rem;
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: linear-gradient(135deg, var(--accent-dim), rgba(29,185,84,0.06));
+  letter-spacing: 1px;
 }
 
-.speaker-info { flex: 1; min-width: 0; }
-.speaker-name {
-  font-size: 0.9rem;
+.speaker-card.chair .sp-avatar {
+  color: var(--gold);
+  background: linear-gradient(135deg, var(--gold-dim), rgba(201,168,76,0.06));
+}
+
+.sp-info { flex: 1; min-width: 0; }
+
+.sp-name {
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
-.speaker-role {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-.speaker-chip.chair { border-color: rgba(201,168,76,0.3); }
-.speaker-chip.chair .speaker-avatar {
-  background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.1));
-}
-.speaker-chip.chair .speaker-name::after {
-  content: 'رئيس الجلسة';
-  margin-right: 8px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--accent-gold);
-  background: rgba(201,168,76,0.12);
+
+.chair-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--gold);
+  background: var(--gold-dim);
   padding: 2px 8px;
   border-radius: 4px;
+  white-space: nowrap;
+}
+
+.sp-role {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
 /* ===== OUTCOMES ===== */
-.outcomes-list {
-  display: flex;
-  flex-direction: column;
+.outcomes-section { margin-bottom: 80px; }
+
+.outcomes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 14px;
-  margin-bottom: 60px;
 }
 
-.outcome-item {
+@media(max-width:700px) { .outcomes-grid { grid-template-columns: 1fr; } }
+
+.outcome-card {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  padding: 20px 24px;
+  padding: 22px 24px;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
-  transform-style: preserve-3d;
-  will-change: transform;
+  transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-.outcome-item:hover {
+.outcome-card:hover {
+  border-color: var(--border-hover);
   background: var(--bg-card-hover);
-  border-color: var(--border-glow);
-  transform: translateX(-6px);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(29,185,84,0.06);
 }
 
 .outcome-icon {
   flex-shrink: 0;
-  width: 36px; height: 36px;
+  width: 38px; height: 38px;
   border-radius: 10px;
-  background: rgba(46,204,113,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: var(--accent-dim);
+  display: flex; align-items: center; justify-content: center;
 }
 
-.outcome-icon svg { width: 18px; height: 18px; fill: var(--accent-green); }
+.outcome-icon svg { width: 18px; height: 18px; fill: var(--accent); }
 
-.outcome-item p {
-  font-size: 0.92rem;
+.outcome-card p {
+  font-size: 0.88rem;
   color: var(--text-secondary);
-  line-height: 1.8;
+  line-height: 1.85;
 }
 
-/* ===== CONTACT FOOTER ===== */
+/* ===== CONTACT ===== */
 .contact-section {
   text-align: center;
-  padding: 60px 20px;
-  margin-bottom: 40px;
+  padding: 80px 20px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.contact-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(29,185,84,0.04) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .contact-section h3 {
   font-size: 1.3rem;
   font-weight: 700;
-  margin-bottom: 24px;
-  color: var(--text-primary);
+  margin-bottom: 28px;
 }
 
-.contact-links {
+.contact-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 12px;
   justify-content: center;
 }
 
 .contact-chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 22px;
+  gap: 10px;
+  padding: 12px 24px;
   border-radius: 50px;
   background: var(--glass);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border);
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   text-decoration: none;
   direction: ltr;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .contact-chip:hover {
-  border-color: var(--border-glow);
-  color: var(--accent-green);
-  transform: translateY(-2px);
+  border-color: var(--border-hover);
+  color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(29,185,84,0.08);
 }
 
-.contact-chip svg { width: 16px; height: 16px; fill: var(--accent-green); }
+.contact-chip svg { width: 16px; height: 16px; fill: var(--accent); }
 
 /* ===== FOOTER ===== */
 .site-footer {
   text-align: center;
   padding: 30px 20px;
-  border-top: 1px solid var(--border-subtle);
+  border-top: 1px solid var(--border);
   color: var(--text-muted);
-  font-size: 0.8rem;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeInDown {
-  from { opacity:0; transform:translateY(-30px); }
-  to { opacity:1; transform:translateY(0); }
-}
-
-@keyframes fadeInUp {
-  from { opacity:0; transform:translateY(30px); }
-  to { opacity:1; transform:translateY(0); }
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
+  font-size: 0.78rem;
 }
 
 /* ===== NO RESULTS ===== */
@@ -852,131 +1055,60 @@ body {
   text-align: center;
   padding: 60px 20px;
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: 1rem;
   display: none;
 }
 
-/* ===== SCROLL TOP ===== */
-.scroll-top {
-  position: fixed;
-  bottom: 30px;
-  left: 30px;
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: rgba(46,204,113,0.15);
-  border: 1px solid rgba(46,204,113,0.3);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 999;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.4s ease;
-  pointer-events: none;
-}
-
-.scroll-top.visible {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: all;
-}
-
-.scroll-top:hover {
-  background: rgba(46,204,113,0.25);
-  transform: translateY(-3px);
-}
-
-.scroll-top svg { width: 20px; height: 20px; fill: var(--accent-green); }
-
-/* ===== LANGUAGE TOGGLE ===== */
-.lang-toggle {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
-  padding: 8px 18px;
-  border-radius: 50px;
-  background: rgba(10,15,26,0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border-subtle);
-  color: var(--accent-green);
-  font-family: inherit;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.lang-toggle:hover {
-  border-color: var(--accent-green);
-  background: rgba(46,204,113,0.1);
-}
-
-/* ===== RESPONSIVE ===== */
-@media(max-width: 600px) {
-  .objectives-grid { grid-template-columns: 1fr; }
-  .speakers-grid { grid-template-columns: 1fr; }
-  .hero { padding: 40px 16px; min-height: 90vh; }
-  .session-body-inner { padding: 16px; }
-  .session-header { padding: 16px 18px; }
+/* ===== RESPONSIVE TWEAKS ===== */
+@media(max-width:600px) {
+  .hero { padding: 60px 16px 40px; min-height: 92vh; }
+  .countdown { gap: 10px; }
+  .cd-unit { min-width: 56px; }
+  .cd-sep { font-size: 1.4rem; }
+  .main-wrap { padding: 0 14px; }
+  .sp-header { padding: 20px; }
+  .obj-grid { gap: 12px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ===== MULTI-LAYER BACKGROUND ===== -->
-<div class="bg-fixed" id="bgFixed">
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Islamic Geometric Pattern -->
+<svg class="geo-pattern" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <pattern id="islamicPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- Eight-point star -->
+      <polygon points="50,5 61,28 85,15 72,38 95,50 72,62 85,85 61,72 50,95 39,72 15,85 28,62 5,50 28,38 15,15 39,28" fill="none" stroke="rgba(29,185,84,0.5)" stroke-width="0.5"/>
+      <!-- Inner octagon -->
+      <polygon points="50,20 65,28 72,43 65,58 50,66 35,58 28,43 35,28" fill="none" stroke="rgba(29,185,84,0.3)" stroke-width="0.3"/>
+      <!-- Interlocking lines -->
+      <line x1="28" y1="28" x2="72" y2="72" stroke="rgba(29,185,84,0.2)" stroke-width="0.3"/>
+      <line x1="72" y1="28" x2="28" y2="72" stroke="rgba(29,185,84,0.2)" stroke-width="0.3"/>
+      <line x1="50" y1="5" x2="50" y2="95" stroke="rgba(29,185,84,0.15)" stroke-width="0.2"/>
+      <line x1="5" y1="50" x2="95" y2="50" stroke="rgba(29,185,84,0.15)" stroke-width="0.2"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="400" fill="url(#islamicPattern)"/>
+</svg>
+
+<!-- Background -->
+<div class="bg-layer" id="bgLayer">
   <div class="bg-gradient"></div>
-  <div class="bg-mesh-tr" id="meshTR"></div>
-  <div class="bg-mesh-bl" id="meshBL"></div>
-  <div class="bg-vignette-top"></div>
-  <div class="bg-lines" id="bgLines"></div>
+  <div class="bg-mesh tr" id="meshTR"></div>
+  <div class="bg-mesh bl" id="meshBL"></div>
   <canvas id="particleCanvas"></canvas>
   <div class="bg-skyline" id="skyline">
-    <svg viewBox="0 0 1440 220" preserveAspectRatio="none" width="100%" height="100%">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="none" width="100%" height="100%">
       <defs>
-        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="rgba(46,204,113,0.08)"/>
-          <stop offset="100%" stop-color="rgba(10,15,26,0.6)"/>
+        <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgba(29,185,84,0.06)"/>
+          <stop offset="100%" stop-color="rgba(5,10,18,0.5)"/>
         </linearGradient>
       </defs>
-      <path fill="url(#skyGrad)" d="
-        M0,220 L0,180
-        L40,180 L40,160 L55,160 L55,170 L70,170 L70,155 L80,155 L80,165 L95,165 L95,150
-        L110,150 L110,140 L120,140 L120,150 L140,150 L140,130 L150,130 L150,145 L165,145
-        L175,145 L175,120 L185,120 L185,110 L195,110 L195,100 L205,100 L205,90 L210,90
-        L210,80 L215,80 L215,70 L218,70 L218,60 L220,60 L220,50 L222,50 L222,40
-        L224,40 L224,30 L226,30 L226,20 L228,20 L228,15 L230,15 L230,12 L232,12
-        L232,15 L234,15 L234,20 L236,20 L236,30 L238,30 L238,40 L240,40 L240,50
-        L242,50 L242,60 L245,60 L245,70 L248,70 L248,80 L252,80 L252,90 L258,90
-        L258,100 L265,100 L265,110 L275,110 L275,120 L285,120 L285,130 L295,130
-        L300,130 L300,120 L310,120 L310,110 L315,110 L315,105 L320,105 L320,110
-        L330,110 L330,120 L340,120 L340,125 L355,125 L355,115 L365,115 L365,120
-        L380,120 L380,130 L400,130 L400,140 L420,140 L420,135 L435,135 L435,125
-        L445,125 L445,115 L450,115 L450,105 L455,105 L455,100 L458,100 L458,95
-        L460,95 L460,100 L463,100 L463,105 L468,105 L468,115 L475,115 L475,125
-        L485,125 L485,135 L500,135 L500,145 L520,145 L520,140 L535,140 L535,135
-        L550,135 L550,130 L570,130 L570,125 L590,125 L590,130 L610,130 L610,140
-        L630,140 L630,135 L650,135 L650,130 L660,130 L660,120 L665,120 L665,110
-        L668,110 L668,100 L670,100 L670,95 L672,95 L672,100 L674,100 L674,110
-        L678,110 L678,120 L685,120 L685,130 L700,130 L700,140 L720,140
-        L720,145 L740,145 L740,140 L760,140 L760,135 L780,135 L780,130
-        L800,130 L800,135 L820,135 L820,140 L850,140 L850,145 L880,145
-        L880,140 L900,140 L900,135 L920,135 L920,130 L935,130 L935,120
-        L940,120 L940,110 L943,110 L943,100 L945,100 L945,90 L947,90
-        L947,85 L949,85 L949,90 L951,90 L951,100 L954,100 L954,110
-        L958,110 L958,120 L965,120 L965,130 L980,130 L980,140 L1000,140
-        L1000,145 L1020,145 L1020,140 L1040,140 L1040,135 L1060,135
-        L1060,130 L1080,130 L1080,135 L1100,135 L1100,140 L1120,140
-        L1120,145 L1140,145 L1140,150 L1160,150 L1160,155 L1180,155
-        L1180,150 L1200,150 L1200,145 L1220,145 L1220,150 L1240,150
-        L1240,155 L1260,155 L1260,160 L1280,160 L1280,155 L1300,155
-        L1300,160 L1320,160 L1320,165 L1340,165 L1340,160 L1360,160
-        L1360,165 L1380,165 L1380,170 L1400,170 L1400,175 L1420,175
-        L1420,180 L1440,180 L1440,220 Z
-      "/>
+      <path fill="url(#skyG)" d="M0,200 L0,170 L50,170 L50,155 L65,155 L65,163 L80,163 L80,148 L95,148 L110,148 L110,135 L120,135 L120,148 L145,148 L145,125 L155,125 L155,140 L175,140 L185,140 L185,115 L195,115 L195,105 L205,105 L205,92 L210,92 L210,80 L215,80 L215,65 L218,65 L218,50 L220,50 L220,38 L222,38 L222,25 L224,25 L224,15 L226,15 L226,10 L228,10 L228,15 L230,15 L230,25 L232,25 L232,38 L234,38 L234,50 L237,50 L237,65 L240,65 L240,80 L245,80 L245,92 L252,92 L252,105 L262,105 L262,115 L275,115 L275,125 L290,125 L300,125 L300,115 L312,115 L312,108 L320,108 L320,115 L335,115 L335,125 L355,125 L355,118 L368,118 L368,125 L385,125 L385,135 L410,135 L410,140 L435,140 L435,130 L448,130 L448,118 L452,118 L452,108 L455,108 L455,98 L458,98 L458,92 L460,92 L460,98 L462,98 L462,108 L466,108 L466,118 L472,118 L472,130 L485,130 L485,140 L510,140 L510,145 L540,145 L540,140 L560,140 L560,135 L585,135 L585,130 L615,130 L615,135 L645,135 L645,140 L670,140 L670,130 L678,130 L678,118 L682,118 L682,108 L684,108 L684,98 L686,98 L686,92 L688,92 L688,98 L690,98 L690,108 L694,108 L694,118 L700,118 L700,130 L720,130 L720,140 L750,140 L750,145 L785,145 L785,140 L820,140 L820,135 L860,135 L860,140 L900,140 L900,145 L940,145 L940,140 L960,140 L960,130 L968,130 L968,118 L972,118 L972,108 L974,108 L974,95 L976,95 L976,85 L978,85 L978,95 L980,95 L980,108 L984,108 L984,118 L990,118 L990,130 L1010,130 L1010,140 L1050,140 L1050,145 L1090,145 L1090,150 L1130,150 L1130,155 L1170,155 L1170,150 L1210,150 L1210,155 L1250,155 L1250,160 L1290,160 L1290,155 L1330,155 L1330,160 L1370,160 L1370,165 L1410,165 L1410,170 L1440,170 L1440,200 Z"/>
     </svg>
   </div>
 </div>
@@ -984,25 +1116,28 @@ body {
 <!-- Cursor Glow -->
 <div class="cursor-glow" id="cursorGlow"></div>
 
-<!-- Language Toggle -->
-<button class="lang-toggle" id="langToggle" onclick="toggleLang()">English</button>
+<!-- Fixed Controls -->
+<div class="fixed-controls">
+  <button class="ctrl-btn" id="langToggle" onclick="toggleLang()">English</button>
+</div>
 
 <!-- Scroll to Top -->
 <div class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
   <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
 </div>
 
-<div class="main-wrapper">
+<div class="main-wrap">
 
   <!-- ===== HERO ===== -->
   <section class="hero" id="hero">
-    <div class="hero-badge">
-      <span class="dot"></span>
+    <div class="hero-badge" id="heroBadge">
+      <span class="pulse"></span>
       <span data-ar="المؤتمر الأول" data-en="First Conference">المؤتمر الأول</span>
     </div>
-    <p class="hero-organizers" data-ar="ينظم المصرف بالتعاون مع اتحاد مصارف الإمارات" data-en="Organized by Al Masraf in collaboration with the UAE Banks Federation">ينظم المصرف بالتعاون مع اتحاد مصارف الإمارات</p>
+    <p class="hero-org" data-ar="ينظم المصرف بالتعاون مع اتحاد مصارف الإمارات" data-en="Organized by Al Masraf in collaboration with the UAE Banks Federation">ينظم المصرف بالتعاون مع اتحاد مصارف الإمارات</p>
     <h1 class="hero-title" data-ar="دور المؤسسات المالية في تنفيذ استراتيجية الإمارات للمالية الإسلامية وصناعة الحلال (2025–2031)" data-en="The Role of Financial Institutions in Implementing the UAE Islamic Finance and Halal Industry Strategy (2025–2031)">دور المؤسسات المالية في تنفيذ استراتيجية الإمارات للمالية الإسلامية وصناعة الحلال (2025–2031)</h1>
     <p class="hero-subtitle" data-ar="&quot;من التشريع إلى النمو والابتكار&quot;" data-en="&quot;From Legislation to Growth and Innovation&quot;">"من التشريع إلى النمو والابتكار"</p>
+
     <div class="hero-meta">
       <span class="meta-chip">
         <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
@@ -1017,13 +1152,25 @@ body {
         <span dir="ltr">8:00 AM – 1:30 PM</span>
       </span>
     </div>
+
+    <!-- Countdown Timer -->
+    <div class="countdown" id="countdown">
+      <div class="cd-unit"><span class="cd-num" id="cdDays">--</span><span class="cd-label" data-ar="يوم" data-en="Days">يوم</span></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit"><span class="cd-num" id="cdHours">--</span><span class="cd-label" data-ar="ساعة" data-en="Hours">ساعة</span></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit"><span class="cd-num" id="cdMins">--</span><span class="cd-label" data-ar="دقيقة" data-en="Minutes">دقيقة</span></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-unit"><span class="cd-num" id="cdSecs">--</span><span class="cd-label" data-ar="ثانية" data-en="Seconds">ثانية</span></div>
+    </div>
+
     <div class="hero-scroll" onclick="document.getElementById('objectives').scrollIntoView({behavior:'smooth'})">
       <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
     </div>
   </section>
 
   <!-- ===== NAV ===== -->
-  <nav class="nav-sticky" id="navBar">
+  <nav class="sticky-nav" id="navBar">
     <div class="nav-inner">
       <button class="nav-pill active" data-target="objectives" data-ar="الأهداف" data-en="Objectives">الأهداف</button>
       <button class="nav-pill" data-target="schedule" data-ar="البرنامج" data-en="Schedule">البرنامج</button>
@@ -1034,47 +1181,46 @@ body {
   </nav>
 
   <!-- ===== SEARCH ===== -->
-  <div class="search-container">
+  <div class="search-wrap">
     <div class="search-box">
       <input type="text" id="searchInput" data-placeholder-ar="ابحث في المؤتمر... (متحدثين، جلسات، مواضيع)" data-placeholder-en="Search conference... (speakers, sessions, topics)" placeholder="ابحث في المؤتمر... (متحدثين، جلسات، مواضيع)">
       <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
     </div>
   </div>
-
   <div class="no-results" id="noResults" data-ar="لا توجد نتائج مطابقة" data-en="No matching results">لا توجد نتائج مطابقة</div>
 
   <!-- ===== OBJECTIVES ===== -->
-  <section id="objectives" class="reveal">
-    <div class="section-header">
+  <section id="objectives" class="sr">
+    <div class="sec-head">
       <h2 data-ar="أهداف المؤتمر" data-en="Conference Objectives">أهداف المؤتمر</h2>
-      <div class="line"></div>
+      <div class="accent-line"></div>
     </div>
-    <div class="objectives-grid" data-searchable>
-      <div class="obj-card tilt-card" data-search="تعزيز مكانة الإمارات مركز عالمي للمالية الإسلامية Strengthen UAE position global hub Islamic finance">
+    <div class="obj-grid" data-searchable>
+      <div class="obj-card sr" data-search="تعزيز مكانة الإمارات مركز عالمي للمالية الإسلامية Strengthen UAE position global hub Islamic finance">
         <div class="obj-num">1</div>
         <p data-ar="تعزيز مكانة الإمارات كمركز عالمي للمالية الإسلامية." data-en="Strengthen the UAE's position as a leading global hub for Islamic finance.">تعزيز مكانة الإمارات كمركز عالمي للمالية الإسلامية.</p>
       </div>
-      <div class="obj-card tilt-card" data-search="تسليط الضوء استراتيجية المالية الإسلامية صناعة الحلال Highlight UAE Strategy Islamic Finance Halal Industry">
+      <div class="obj-card sr" data-search="تسليط الضوء استراتيجية المالية الإسلامية صناعة الحلال Highlight UAE Strategy Islamic Finance Halal Industry">
         <div class="obj-num">2</div>
         <p data-ar="تسليط الضوء على استراتيجية دولة الإمارات للمالية الإسلامية وصناعة الحلال، وبيان دور المؤسسات المالية في دعمها وتنفيذها على المستويين المحلي والدولي." data-en="Highlight the UAE Strategy for Islamic Finance and the Halal Industry and clarify the role of financial institutions in supporting and implementing it locally and internationally.">تسليط الضوء على استراتيجية دولة الإمارات للمالية الإسلامية وصناعة الحلال، وبيان دور المؤسسات المالية في دعمها وتنفيذها على المستويين المحلي والدولي.</p>
       </div>
-      <div class="obj-card tilt-card" data-search="تعزيز فهم الدور التنفيذي الأطر التشريعية التنظيمية منتجات خدمات مبتكرة Translate legislative regulatory frameworks innovative financial products">
+      <div class="obj-card sr" data-search="تعزيز فهم الدور التنفيذي الأطر التشريعية التنظيمية منتجات خدمات مبتكرة Translate legislative regulatory frameworks innovative financial products">
         <div class="obj-num">3</div>
         <p data-ar="تعزيز فهم الدور التنفيذي للمؤسسات المالية في تحويل الأطر التشريعية والتنظيمية إلى منتجات وخدمات مالية مبتكرة تدعم الاقتصاد الحلال." data-en="Translate legislative and regulatory frameworks into innovative financial products and services that support the halal economy.">تعزيز فهم الدور التنفيذي للمؤسسات المالية في تحويل الأطر التشريعية والتنظيمية إلى منتجات وخدمات مالية مبتكرة تدعم الاقتصاد الحلال.</p>
       </div>
-      <div class="obj-card tilt-card" data-search="مناقشة الممارسات تطوير تمويل المشاريع الشريعة الإسلامية النمو المستدام Discuss leading practices Shari'ah-compliant projects sustainable economic growth">
+      <div class="obj-card sr" data-search="مناقشة الممارسات تطوير تمويل المشاريع الشريعة الإسلامية النمو المستدام Discuss leading practices Shari'ah-compliant projects sustainable economic growth">
         <div class="obj-num">4</div>
         <p data-ar="مناقشة أفضل الممارسات في تطوير وتمويل المشاريع المتوافقة مع الشريعة الإسلامية، بما يسهم في تحقيق النمو الاقتصادي المستدام." data-en="Discuss leading practices in developing and financing Shari'ah-compliant projects that advance sustainable economic growth.">مناقشة أفضل الممارسات في تطوير وتمويل المشاريع المتوافقة مع الشريعة الإسلامية، بما يسهم في تحقيق النمو الاقتصادي المستدام.</p>
       </div>
-      <div class="obj-card tilt-card" data-search="الابتكار التقنيات المالية FinTech التحول الرقمي Showcase FinTech innovation digital transformation">
+      <div class="obj-card sr" data-search="الابتكار التقنيات المالية FinTech التحول الرقمي Showcase FinTech innovation digital transformation">
         <div class="obj-num">5</div>
         <p data-ar="استعراض دور الابتكار والتقنيات المالية (FinTech) في تمكين المالية الإسلامية وصناعة الحلال، ورفع كفاءة الخدمات المالية." data-en="Showcase the role of financial innovation and FinTech in empowering Islamic finance and the halal industry and improving the efficiency of financial services.">استعراض دور الابتكار والتقنيات المالية (FinTech) في تمكين المالية الإسلامية وصناعة الحلال، ورفع كفاءة الخدمات المالية.</p>
       </div>
-      <div class="obj-card tilt-card" data-search="الحوكمة الشفافية إدارة المخاطر Reinforce governance transparency risk management">
+      <div class="obj-card sr" data-search="الحوكمة الشفافية إدارة المخاطر Reinforce governance transparency risk management">
         <div class="obj-num">6</div>
         <p data-ar="تعزيز مبادئ الحوكمة والشفافية وإدارة المخاطر في المؤسسات المالية العاملة في مجال المالية الإسلامية وصناعة الحلال." data-en="Reinforce governance, transparency and risk management across Islamic finance and halal-industry institutions.">تعزيز مبادئ الحوكمة والشفافية وإدارة المخاطر في المؤسسات المالية العاملة في مجال المالية الإسلامية وصناعة الحلال.</p>
       </div>
-      <div class="obj-card tilt-card" data-search="تعميق الشراكة الجهات التنظيمية المؤسسات المالية الاستراتيجية الوطنية Deepen cooperation regulators financial institutions national strategy">
+      <div class="obj-card sr" data-search="تعميق الشراكة الجهات التنظيمية المؤسسات المالية الاستراتيجية الوطنية Deepen cooperation regulators financial institutions national strategy">
         <div class="obj-num">7</div>
         <p data-ar="تعميق الشراكة بين الجهات التنظيمية والمؤسسات المالية بما يسهم في توحيد الجهود وتحقيق مستهدفات الاستراتيجية الوطنية." data-en="Deepen cooperation among regulators and financial institutions to align efforts and achieve the national strategy's objectives.">تعميق الشراكة بين الجهات التنظيمية والمؤسسات المالية بما يسهم في توحيد الجهود وتحقيق مستهدفات الاستراتيجية الوطنية.</p>
       </div>
@@ -1082,81 +1228,82 @@ body {
   </section>
 
   <!-- ===== SCHEDULE TIMELINE ===== -->
-  <section id="schedule" class="reveal">
-    <div class="section-header">
+  <section id="schedule" class="timeline-section sr">
+    <div class="sec-head">
       <h2 data-ar="البرنامج الزمني" data-en="Conference Schedule">البرنامج الزمني</h2>
-      <div class="line"></div>
+      <div class="accent-line"></div>
+      <p class="sec-subtitle" data-ar="الأربعاء، 30 سبتمبر 2026 | 8:00 صباحاً – 1:30 ظهراً" data-en="Wednesday, 30 September 2026 | 8:00 AM – 1:30 PM">الأربعاء، 30 سبتمبر 2026 | 8:00 صباحاً – 1:30 ظهراً</p>
     </div>
     <div class="timeline" data-searchable>
-      <div class="timeline-item" data-search="التسجيل Registration 8:00 9:00">
-        <div class="timeline-time">8:00 – 9:00 AM</div>
-        <div class="timeline-dot"></div>
-        <div class="timeline-content tilt-card">
+      <div class="tl-item sr-right" data-search="التسجيل Registration 8:00 9:00">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <span class="tl-time">8:00 – 9:00 AM</span>
           <h4 data-ar="التسجيل" data-en="Registration">التسجيل</h4>
         </div>
       </div>
-      <div class="timeline-item" data-search="حفل الافتتاح الرسمي النشيد الوطني القرآن الكريم كلمات Opening Ceremony National Anthem Quran 9:00 9:45 السويدي عمر الدرعي إبراهيم الزعابي عبدالله آل صالح محمد الشامسي سعيد لوتاه">
-        <div class="timeline-time">9:00 – 9:45 AM</div>
-        <div class="timeline-dot"></div>
-        <div class="timeline-content tilt-card">
+      <div class="tl-item sr-left" data-search="حفل الافتتاح الرسمي النشيد الوطني القرآن الكريم كلمات Opening Ceremony National Anthem Quran 9:00 9:45">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <span class="tl-time">9:00 – 9:45 AM</span>
           <h4 data-ar="حفل الافتتاح الرسمي" data-en="Official Opening Ceremony">حفل الافتتاح الرسمي</h4>
           <p data-ar="النشيد الوطني • تلاوة القرآن الكريم – الشيخ تميم الكندي • كلمات سعادة محمد سيف السويدي، معالي الدكتور عمر الدرعي، سعادة إبراهيم عبيد الزعابي، سعادة عبدالله أحمد آل صالح، سعادة محمد عمران الشامسي • تكريم المغفور له الحاج سعيد لوتاه" data-en="UAE National Anthem • Holy Qur'an recitation by Sheikh Tameim Al Kindi • Speeches by H.E. Mohamed Saif Al Suwaidi, H.E. Dr. Omar Alderei, H.E. Ebrahim Al Zaabi, H.E. Abdulla Al Saleh, H.E. Mohamed Al Shamsi • Honouring the Late Hajj Saeed Lootah">النشيد الوطني • تلاوة القرآن الكريم – الشيخ تميم الكندي • كلمات سعادة محمد سيف السويدي، معالي الدكتور عمر الدرعي، سعادة إبراهيم عبيد الزعابي، سعادة عبدالله أحمد آل صالح، سعادة محمد عمران الشامسي • تكريم المغفور له الحاج سعيد لوتاه</p>
         </div>
       </div>
-      <div class="timeline-item" data-search="استراحة قصيرة Short Break 9:45 10:00">
-        <div class="timeline-time">9:45 – 10:00 AM</div>
-        <div class="timeline-dot"></div>
-        <div class="timeline-content tilt-card">
+      <div class="tl-item sr-right" data-search="استراحة قصيرة Short Break 9:45 10:00">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <span class="tl-time">9:45 – 10:00 AM</span>
           <h4 data-ar="استراحة قصيرة" data-en="Short Break">استراحة قصيرة</h4>
         </div>
       </div>
-      <div class="timeline-item" data-search="الجلسة الأولى الإطار الاستراتيجي والتشريعي Session 1 Strategic Legislative Framework 10:00 10:45">
-        <div class="timeline-time">10:00 – 10:45 AM</div>
-        <div class="timeline-dot"></div>
-        <div class="timeline-content tilt-card">
+      <div class="tl-item sr-left" data-search="الجلسة الأولى الإطار الاستراتيجي والتشريعي Session 1 Strategic Legislative Framework 10:00 10:45">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <span class="tl-time">10:00 – 10:45 AM</span>
           <h4 data-ar="الجلسة الأولى: الإطار الاستراتيجي والتشريعي" data-en="Session 1: Strategic & Legislative Framework">الجلسة الأولى: الإطار الاستراتيجي والتشريعي</h4>
         </div>
       </div>
-      <div class="timeline-item" data-search="الجلسة الثانية دور المؤسسات المالية نمو صناعة الحلال Session 2 Financial Institutions Halal Industry 10:45 11:30">
-        <div class="timeline-time">10:45 – 11:30 AM</div>
-        <div class="timeline-dot"></div>
-        <div class="timeline-content tilt-card">
+      <div class="tl-item sr-right" data-search="الجلسة الثانية دور المؤسسات المالية نمو صناعة الحلال Session 2 Financial Institutions Halal Industry 10:45 11:30">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <span class="tl-time">10:45 – 11:30 AM</span>
           <h4 data-ar="الجلسة الثانية: دور المؤسسات المالية في نمو صناعة الحلال" data-en="Session 2: The Role of Financial Institutions in the Halal Industry">الجلسة الثانية: دور المؤسسات المالية في نمو صناعة الحلال</h4>
         </div>
       </div>
-      <div class="timeline-item" data-search="مكانة الإمارات التمويل الإسلامي مصطفى عادل بورصة لندن UAE Global Position Islamic Finance Mustafa Adil LSEG 11:30 11:45">
-        <div class="timeline-time">11:30 – 11:45 AM</div>
-        <div class="timeline-dot"></div>
-        <div class="timeline-content tilt-card">
+      <div class="tl-item sr-left" data-search="مكانة الإمارات التمويل الإسلامي مصطفى عادل بورصة لندن UAE Global Position Islamic Finance Mustafa Adil LSEG 11:30 11:45">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <span class="tl-time">11:30 – 11:45 AM</span>
           <h4 data-ar="مكانة الإمارات العالمية في التمويل الإسلامي" data-en="The UAE's Global Position in Islamic Finance">مكانة الإمارات العالمية في التمويل الإسلامي</h4>
           <p data-ar="عرض يقدمه: مصطفى عادل، رئيس التمويل الإسلامي في مجموعة بورصة لندن للأوراق المالية" data-en="Presented by Mr. Mustafa Adil, Head of Islamic Finance, London Stock Exchange Group (LSEG)">عرض يقدمه: مصطفى عادل، رئيس التمويل الإسلامي في مجموعة بورصة لندن للأوراق المالية</p>
         </div>
       </div>
-      <div class="timeline-item" data-search="استراحة قصيرة Short Break 11:45 12:00">
-        <div class="timeline-time">11:45 – 12:00 PM</div>
-        <div class="timeline-dot"></div>
-        <div class="timeline-content tilt-card">
+      <div class="tl-item sr-right" data-search="استراحة قصيرة Short Break 11:45 12:00">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <span class="tl-time">11:45 – 12:00 PM</span>
           <h4 data-ar="استراحة قصيرة" data-en="Short Break">استراحة قصيرة</h4>
         </div>
       </div>
-      <div class="timeline-item" data-search="الجلسة الثالثة الصكوك الابتكار التكنولوجيا Session 3 Sukuk Innovation Technology 12:00 12:45">
-        <div class="timeline-time">12:00 – 12:45 PM</div>
-        <div class="timeline-dot"></div>
-        <div class="timeline-content tilt-card">
+      <div class="tl-item sr-left" data-search="الجلسة الثالثة الصكوك الابتكار التكنولوجيا Session 3 Sukuk Innovation Technology 12:00 12:45">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <span class="tl-time">12:00 – 12:45 PM</span>
           <h4 data-ar="الجلسة الثالثة: الصكوك والابتكار والتكنولوجيا" data-en="Session 3: Sukuk, Innovation & Technology">الجلسة الثالثة: الصكوك والابتكار والتكنولوجيا</h4>
         </div>
       </div>
-      <div class="timeline-item" data-search="الجلسة الرابعة الحوكمة إدارة المخاطر Session 4 Governance Risk Management 12:45 1:30">
-        <div class="timeline-time">12:45 – 1:30 PM</div>
-        <div class="timeline-dot"></div>
-        <div class="timeline-content tilt-card">
+      <div class="tl-item sr-right" data-search="الجلسة الرابعة الحوكمة إدارة المخاطر Session 4 Governance Risk Management 12:45 1:30">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <span class="tl-time">12:45 – 1:30 PM</span>
           <h4 data-ar="الجلسة الرابعة: الحوكمة وإدارة المخاطر" data-en="Session 4: Governance & Risk Management">الجلسة الرابعة: الحوكمة وإدارة المخاطر</h4>
         </div>
       </div>
-      <div class="timeline-item" data-search="نهاية المؤتمر والغداء Conference Conclusion Lunch 1:30">
-        <div class="timeline-time">1:30 PM</div>
-        <div class="timeline-dot"></div>
-        <div class="timeline-content tilt-card">
+      <div class="tl-item sr-left" data-search="نهاية المؤتمر والغداء Conference Conclusion Lunch 1:30">
+        <div class="tl-dot"></div>
+        <div class="tl-card">
+          <span class="tl-time">1:30 PM</span>
           <h4 data-ar="نهاية المؤتمر والغداء" data-en="Conference Conclusion & Lunch">نهاية المؤتمر والغداء</h4>
         </div>
       </div>
@@ -1164,292 +1311,137 @@ body {
   </section>
 
   <!-- ===== SESSIONS ===== -->
-  <section id="sessions" class="reveal">
-    <div class="section-header">
+  <section id="sessions" class="sessions-section sr">
+    <div class="sec-head">
       <h2 data-ar="جلسات المؤتمر" data-en="Conference Sessions">جلسات المؤتمر</h2>
-      <div class="line"></div>
+      <div class="accent-line"></div>
     </div>
-    <div class="sessions-container" data-searchable>
 
-      <!-- SESSION 1 -->
-      <div class="session-card tilt-card" data-search="الجلسة الأولى الإطار الاستراتيجي والتشريعي للمالية الإسلامية وصناعة الحلال Session 1 Strategic Legislative Framework جاسم الشامسي عبدالله آل صالح أسيد الكيلاني">
-        <div class="session-header" onclick="this.parentElement.classList.toggle('open')">
-          <h3 data-ar="الجلسة الأولى: الإطار الاستراتيجي والتشريعي للمالية الإسلامية وصناعة الحلال" data-en="Session 1: Strategic & Legislative Framework for Islamic Finance and the Halal Industry">الجلسة الأولى: الإطار الاستراتيجي والتشريعي للمالية الإسلامية وصناعة الحلال</h3>
-          <span class="session-time-badge">10:00 – 10:45 AM</span>
-          <svg class="session-toggle" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
-        </div>
-        <div class="session-body">
-          <div class="session-body-inner">
-            <div class="session-topics">
-              <h4 data-ar="محاور الجلسة" data-en="Session Topics">محاور الجلسة</h4>
-              <div class="topic-item">
-                <span class="topic-num">1</span>
-                <span data-ar="رؤية دولة الإمارات ومستهدفات استراتيجية المالية الإسلامية وصناعة الحلال" data-en="The UAE's vision and strategic objectives for Islamic finance and the halal industry">رؤية دولة الإمارات ومستهدفات استراتيجية المالية الإسلامية وصناعة الحلال</span>
-              </div>
-              <div class="topic-item">
-                <span class="topic-num">2</span>
-                <span data-ar="الأطر التشريعية والتنظيمية والشرعية الداعمة لتنفيذ الاستراتيجية والنمو والابتكار" data-en="Legislative, regulatory and Shari'ah frameworks supporting implementation, growth and innovation">الأطر التشريعية والتنظيمية والشرعية الداعمة لتنفيذ الاستراتيجية والنمو والابتكار</span>
-              </div>
-              <div class="topic-item">
-                <span class="topic-num">3</span>
-                <span data-ar="التكامل بين الجهات التنظيمية والمؤسسات المالية وصناعة الحلال والعمل الخيري في تحقيق مستهدفات الاستراتيجية" data-en="Integration among regulators, financial institutions, the halal industry and philanthropy">التكامل بين الجهات التنظيمية والمؤسسات المالية وصناعة الحلال والعمل الخيري في تحقيق مستهدفات الاستراتيجية</span>
-              </div>
-            </div>
-            <div class="speakers-section">
-              <h4 data-ar="المتحدثون" data-en="Speakers">المتحدثون</h4>
-              <div class="speakers-grid">
-                <div class="speaker-chip chair">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="فضيلة الأستاذ الدكتور جاسم الشامسي" data-en="Sheikh Prof. Dr. Jassim Al Shamsi">فضيلة الأستاذ الدكتور جاسم الشامسي</div>
-                    <div class="speaker-role" data-ar="عضو الهيئة العليا الشرعية بمصرف الإمارات المركزي" data-en="Member, Higher Shari'ah Authority, Central Bank of the UAE">عضو الهيئة العليا الشرعية بمصرف الإمارات المركزي</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="سعادة عبدالله أحمد آل صالح" data-en="H.E. Abdulla Ahmed Al Saleh">سعادة عبدالله أحمد آل صالح</div>
-                    <div class="speaker-role" data-ar="وكيل وزارة الاقتصاد والسياحة" data-en="Undersecretary, Ministry of Economy and Tourism">وكيل وزارة الاقتصاد والسياحة</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="فضيلة الدكتور أسيد الكيلاني" data-en="Sheikh Dr. Osaid Kailani">فضيلة الدكتور أسيد الكيلاني</div>
-                    <div class="speaker-role" data-ar="رئيس قطاع الشؤون الشرعية الدولي في مصرف أبو ظبي الإسلامي وعضو الهيئة العليا الشرعية بمصرف الإمارات المركزي" data-en="Head of International Shari'ah Affairs, ADIB; Member, Higher Shari'ah Authority, CBUAE">رئيس قطاع الشؤون الشرعية الدولي في مصرف أبو ظبي الإسلامي وعضو الهيئة العليا الشرعية بمصرف الإمارات المركزي</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="session-tabs" data-searchable>
+      <button class="stab active" data-panel="panel1" data-ar="الجلسة الأولى" data-en="Session 1" data-search="الجلسة الأولى الإطار الاستراتيجي والتشريعي Session 1">الجلسة الأولى</button>
+      <button class="stab" data-panel="panel2" data-ar="الجلسة الثانية" data-en="Session 2" data-search="الجلسة الثانية دور المؤسسات المالية صناعة الحلال Session 2">الجلسة الثانية</button>
+      <button class="stab" data-panel="panel3" data-ar="الجلسة الثالثة" data-en="Session 3" data-search="الجلسة الثالثة الصكوك الابتكار التكنولوجيا Session 3">الجلسة الثالثة</button>
+      <button class="stab" data-panel="panel4" data-ar="الجلسة الرابعة" data-en="Session 4" data-search="الجلسة الرابعة الحوكمة إدارة المخاطر Session 4">الجلسة الرابعة</button>
+    </div>
+
+    <!-- Session 1 -->
+    <div class="session-panel active" id="panel1" data-search="الجلسة الأولى الإطار الاستراتيجي والتشريعي للمالية الإسلامية وصناعة الحلال Session 1 Strategic Legislative Framework جاسم الشامسي عبدالله آل صالح أسيد الكيلاني">
+      <div class="sp-header">
+        <h3 data-ar="الجلسة الأولى: الإطار الاستراتيجي والتشريعي للمالية الإسلامية وصناعة الحلال" data-en="Session 1: Strategic & Legislative Framework for Islamic Finance and the Halal Industry">الجلسة الأولى: الإطار الاستراتيجي والتشريعي للمالية الإسلامية وصناعة الحلال</h3>
+        <div class="sp-time"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 10:00 – 10:45 AM</div>
       </div>
-
-      <!-- SESSION 2 -->
-      <div class="session-card tilt-card" data-search="الجلسة الثانية دور المؤسسات المالية في نمو صناعة الحلال وتنفيذ الاستراتيجية Session 2 Financial Institutions Halal Industry Strategy علي لوتاه أحمد الحداد فؤاد محمد علي العابدين">
-        <div class="session-header" onclick="this.parentElement.classList.toggle('open')">
-          <h3 data-ar="الجلسة الثانية: دور المؤسسات المالية في نمو صناعة الحلال وتنفيذ الاستراتيجية" data-en="Session 2: The Role of Financial Institutions in Growing the Halal Industry">الجلسة الثانية: دور المؤسسات المالية في نمو صناعة الحلال وتنفيذ الاستراتيجية</h3>
-          <span class="session-time-badge">10:45 – 11:30 AM</span>
-          <svg class="session-toggle" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
-        </div>
-        <div class="session-body">
-          <div class="session-body-inner">
-            <div class="session-topics">
-              <h4 data-ar="محاور الجلسة" data-en="Session Topics">محاور الجلسة</h4>
-              <div class="topic-item">
-                <span class="topic-num">1</span>
-                <span data-ar="تطوير حلول ومنتجات مالية واستثمارية مبتكرة ومتوافقة مع الشريعة لدعم مستهدفات الاستراتيجية" data-en="Innovative Shari'ah-compliant financing and investment solutions supporting the strategy">تطوير حلول ومنتجات مالية واستثمارية مبتكرة ومتوافقة مع الشريعة لدعم مستهدفات الاستراتيجية</span>
-              </div>
-              <div class="topic-item">
-                <span class="topic-num">2</span>
-                <span data-ar="تمويل مشاريع وشركات صناعة الحلال ودعم نموها واستثماراتها المستدامة" data-en="Financing halal-industry projects and companies and supporting sustainable growth and investment">تمويل مشاريع وشركات صناعة الحلال ودعم نموها واستثماراتها المستدامة</span>
-              </div>
-              <div class="topic-item">
-                <span class="topic-num">3</span>
-                <span data-ar="دور الوقف النقدي في تنفيذ الاستراتيجية وتحقيق الأثر الاقتصادي والاجتماعي المستدام" data-en="The role of cash waqf in delivering sustainable economic and social impact">دور الوقف النقدي في تنفيذ الاستراتيجية وتحقيق الأثر الاقتصادي والاجتماعي المستدام</span>
-              </div>
-              <div class="topic-item">
-                <span class="topic-num">4</span>
-                <span data-ar="الشراكات بين المؤسسات المالية والجهات الوطنية والمستثمرين والقطاع الخاص" data-en="Partnerships among financial institutions, national bodies, investors and the private sector">الشراكات بين المؤسسات المالية والجهات الوطنية والمستثمرين والقطاع الخاص</span>
-              </div>
-            </div>
-            <div class="speakers-section">
-              <h4 data-ar="المتحدثون" data-en="Speakers">المتحدثون</h4>
-              <div class="speakers-grid">
-                <div class="speaker-chip chair">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الأستاذ علي لوتاه" data-en="Mr. Ali Lootah">الأستاذ علي لوتاه</div>
-                    <div class="speaker-role" data-ar="رئيس النافذة الإسلامية في بنك الإمارات دبي الوطني" data-en="Head of Islamic Banking Window, Emirates NBD">رئيس النافذة الإسلامية في بنك الإمارات دبي الوطني</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="فضيلة الدكتور أحمد الحداد" data-en="Sheikh Dr. Ahmad Al Haddad">فضيلة الدكتور أحمد الحداد</div>
-                    <div class="speaker-role" data-ar="رئيس الهيئة العليا الشرعية بمصرف الإمارات المركزي وعضو مجلس الإمارات للإفتاء الشرعي" data-en="Chairman, Higher Shari'ah Authority, CBUAE; Member, UAE Council for Fatwa">رئيس الهيئة العليا الشرعية بمصرف الإمارات المركزي وعضو مجلس الإمارات للإفتاء الشرعي</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الأستاذ فؤاد محمد" data-en="Mr. Fuad Mohamed">الأستاذ فؤاد محمد</div>
-                    <div class="speaker-role" data-ar="الرئيس التنفيذي للمصرف العربي للاستثمار والتجارة الخارجية" data-en="Chief Executive Officer, Arab Bank for Investment and Foreign Trade">الرئيس التنفيذي للمصرف العربي للاستثمار والتجارة الخارجية</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الأستاذ علي محمد العابدين" data-en="Mr. Ali Al Abedin">الأستاذ علي محمد العابدين</div>
-                    <div class="speaker-role" data-ar="رئيس النافذة الإسلامية في بنك أبو ظبي الأول" data-en="Head of Islamic Banking, First Abu Dhabi Bank">رئيس النافذة الإسلامية في بنك أبو ظبي الأول</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="topics-block">
+        <div class="topics-label" data-ar="محاور الجلسة" data-en="Session Topics">محاور الجلسة</div>
+        <div class="topic-row"><span class="topic-idx">1</span><span data-ar="رؤية دولة الإمارات ومستهدفات استراتيجية المالية الإسلامية وصناعة الحلال" data-en="The UAE's vision and strategic objectives for Islamic finance and the halal industry">رؤية دولة الإمارات ومستهدفات استراتيجية المالية الإسلامية وصناعة الحلال</span></div>
+        <div class="topic-row"><span class="topic-idx">2</span><span data-ar="الأطر التشريعية والتنظيمية والشرعية الداعمة لتنفيذ الاستراتيجية والنمو والابتكار" data-en="Legislative, regulatory and Shari'ah frameworks supporting implementation, growth and innovation">الأطر التشريعية والتنظيمية والشرعية الداعمة لتنفيذ الاستراتيجية والنمو والابتكار</span></div>
+        <div class="topic-row"><span class="topic-idx">3</span><span data-ar="التكامل بين الجهات التنظيمية والمؤسسات المالية وصناعة الحلال والعمل الخيري في تحقيق مستهدفات الاستراتيجية" data-en="Integration among regulators, financial institutions, the halal industry and philanthropy">التكامل بين الجهات التنظيمية والمؤسسات المالية وصناعة الحلال والعمل الخيري في تحقيق مستهدفات الاستراتيجية</span></div>
       </div>
-
-      <!-- SESSION 3 -->
-      <div class="session-card tilt-card" data-search="الجلسة الثالثة الصكوك والابتكار والتكنولوجيا في المالية الإسلامية وصناعة الحلال Session 3 Sukuk Innovation Technology مصطفى عادل محمد داوود سالم آل علي رفيع الدين شيكو HSBC LSEG DinarStandard">
-        <div class="session-header" onclick="this.parentElement.classList.toggle('open')">
-          <h3 data-ar="الجلسة الثالثة: الصكوك والابتكار والتكنولوجيا في المالية الإسلامية وصناعة الحلال" data-en="Session 3: Sukuk, Innovation & Technology in Islamic Finance and the Halal Industry">الجلسة الثالثة: الصكوك والابتكار والتكنولوجيا في المالية الإسلامية وصناعة الحلال</h3>
-          <span class="session-time-badge">12:00 – 12:45 PM</span>
-          <svg class="session-toggle" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
-        </div>
-        <div class="session-body">
-          <div class="session-body-inner">
-            <div class="session-topics">
-              <h4 data-ar="محاور الجلسة" data-en="Session Topics">محاور الجلسة</h4>
-              <div class="topic-item">
-                <span class="topic-num">1</span>
-                <span data-ar="تطوير أسواق الصكوك والمنتجات الاستثمارية ودورها في تمويل النمو وتحقيق مستهدفات الاستراتيجية" data-en="Developing sukuk and investment-product markets to finance growth and advance the strategy">تطوير أسواق الصكوك والمنتجات الاستثمارية ودورها في تمويل النمو وتحقيق مستهدفات الاستراتيجية</span>
-              </div>
-              <div class="topic-item">
-                <span class="topic-num">2</span>
-                <span data-ar="الابتكار في أدوات الصكوك وتوسيع قاعدة المستثمرين وتعميق أسواق رأس المال الإسلامية" data-en="Innovation in sukuk instruments, broadening the investor base and deepening Islamic capital markets">الابتكار في أدوات الصكوك وتوسيع قاعدة المستثمرين وتعميق أسواق رأس المال الإسلامية</span>
-              </div>
-              <div class="topic-item">
-                <span class="topic-num">3</span>
-                <span data-ar="التكنولوجيا المالية والتحول الرقمي في تطوير المنتجات والخدمات المالية الإسلامية" data-en="FinTech and digital transformation in Islamic financial products and services">التكنولوجيا المالية والتحول الرقمي في تطوير المنتجات والخدمات المالية الإسلامية</span>
-              </div>
-              <div class="topic-item">
-                <span class="topic-num">4</span>
-                <span data-ar="المنصات والحلول الرقمية المبتكرة وربطها بفرص التمويل والاستثمار في صناعة الحلال" data-en="Innovative digital platforms linking financing and investment opportunities in the halal industry">المنصات والحلول الرقمية المبتكرة وربطها بفرص التمويل والاستثمار في صناعة الحلال</span>
-              </div>
-            </div>
-            <div class="speakers-section">
-              <h4 data-ar="المتحدثون" data-en="Speakers">المتحدثون</h4>
-              <div class="speakers-grid">
-                <div class="speaker-chip chair">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الأستاذ مصطفى عادل" data-en="Mr. Mustafa Adil">الأستاذ مصطفى عادل</div>
-                    <div class="speaker-role" data-ar="رئيس التمويل الإسلامي في مجموعة بورصة لندن للأوراق المالية" data-en="Head of Islamic Finance, London Stock Exchange Group (LSEG)">رئيس التمويل الإسلامي في مجموعة بورصة لندن للأوراق المالية</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الأستاذ محمد داوود" data-en="Mr. Mohammed Dawood">الأستاذ محمد داوود</div>
-                    <div class="speaker-role" data-ar="رئيس الصيرفة الإسلامية في الشرق الأوسط – HSBC" data-en="Head of Islamic Finance, Middle East, HSBC">رئيس الصيرفة الإسلامية في الشرق الأوسط – HSBC</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الدكتور سالم آل علي" data-en="Dr. Salim Al Ali">الدكتور سالم آل علي</div>
-                    <div class="speaker-role" data-ar="أستاذ مساعد، كلية القانون، جامعة الإمارات" data-en="Assistant Professor, College of Law, UAE University">أستاذ مساعد، كلية القانون، جامعة الإمارات</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الأستاذ رفيع الدين شيكو" data-en="Mr. Rafi Uddin Shikoh">الأستاذ رفيع الدين شيكو</div>
-                    <div class="speaker-role" data-ar="المؤسس والرئيس التنفيذي، شركة دينار ستاندرد" data-en="Founder and CEO, DinarStandard">المؤسس والرئيس التنفيذي، شركة دينار ستاندرد</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="speakers-label" data-ar="المتحدثون" data-en="Speakers">المتحدثون</div>
+      <div class="speakers-grid">
+        <div class="speaker-card chair"><div class="sp-avatar">ج.ش</div><div class="sp-info"><div class="sp-name" data-ar="فضيلة الأستاذ الدكتور جاسم الشامسي" data-en="Sheikh Prof. Dr. Jassim Al Shamsi">فضيلة الأستاذ الدكتور جاسم الشامسي <span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div><div class="sp-role" data-ar="عضو الهيئة العليا الشرعية بمصرف الإمارات المركزي" data-en="Member, Higher Shari'ah Authority, Central Bank of the UAE">عضو الهيئة العليا الشرعية بمصرف الإمارات المركزي</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">ع.ص</div><div class="sp-info"><div class="sp-name" data-ar="سعادة عبدالله أحمد آل صالح" data-en="H.E. Abdulla Ahmed Al Saleh">سعادة عبدالله أحمد آل صالح</div><div class="sp-role" data-ar="وكيل وزارة الاقتصاد والسياحة" data-en="Undersecretary, Ministry of Economy and Tourism">وكيل وزارة الاقتصاد والسياحة</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">أ.ك</div><div class="sp-info"><div class="sp-name" data-ar="فضيلة الدكتور أسيد الكيلاني" data-en="Sheikh Dr. Osaid Kailani">فضيلة الدكتور أسيد الكيلاني</div><div class="sp-role" data-ar="رئيس قطاع الشؤون الشرعية الدولي في مصرف أبو ظبي الإسلامي وعضو الهيئة العليا الشرعية بمصرف الإمارات المركزي" data-en="Head of International Shari'ah Affairs, ADIB; Member, Higher Shari'ah Authority, CBUAE">رئيس قطاع الشؤون الشرعية الدولي في مصرف أبو ظبي الإسلامي وعضو الهيئة العليا الشرعية بمصرف الإمارات المركزي</div></div></div>
       </div>
+    </div>
 
-      <!-- SESSION 4 -->
-      <div class="session-card tilt-card" data-search="الجلسة الرابعة الحوكمة وإدارة المخاطر تعزيز الثقة واستدامة النمو Session 4 Governance Risk Management سامية النهدي محمد البلوشي مارية القاسم فضل رحيم">
-        <div class="session-header" onclick="this.parentElement.classList.toggle('open')">
-          <h3 data-ar="الجلسة الرابعة: الحوكمة وإدارة المخاطر – تعزيز الثقة واستدامة النمو" data-en="Session 4: Governance & Risk Management – Building Trust and Sustaining Growth">الجلسة الرابعة: الحوكمة وإدارة المخاطر – تعزيز الثقة واستدامة النمو</h3>
-          <span class="session-time-badge">12:45 – 1:30 PM</span>
-          <svg class="session-toggle" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
-        </div>
-        <div class="session-body">
-          <div class="session-body-inner">
-            <div class="session-topics">
-              <h4 data-ar="محاور الجلسة" data-en="Session Topics">محاور الجلسة</h4>
-              <div class="topic-item">
-                <span class="topic-num">1</span>
-                <span data-ar="معايير الحوكمة والرقابة الشرعية على المنتجات والخدمات المالية الإسلامية" data-en="Governance and Shari'ah supervision standards for Islamic financial products and services">معايير الحوكمة والرقابة الشرعية على المنتجات والخدمات المالية الإسلامية</span>
-              </div>
-              <div class="topic-item">
-                <span class="topic-num">2</span>
-                <span data-ar="إدارة المخاطر والشفافية في ظل تطور المنتجات والأسواق والحلول المبتكرة" data-en="Risk management and transparency amid evolving products, markets and innovative solutions">إدارة المخاطر والشفافية في ظل تطور المنتجات والأسواق والحلول المبتكرة</span>
-              </div>
-              <div class="topic-item">
-                <span class="topic-num">3</span>
-                <span data-ar="تحقيق التوازن بين الابتكار والنمو والامتثال لضمان استدامة القطاع" data-en="Balancing innovation, growth and compliance to ensure sector sustainability">تحقيق التوازن بين الابتكار والنمو والامتثال لضمان استدامة القطاع</span>
-              </div>
-            </div>
-            <div class="speakers-section">
-              <h4 data-ar="المتحدثون" data-en="Speakers">المتحدثون</h4>
-              <div class="speakers-grid">
-                <div class="speaker-chip chair">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الدكتورة سامية النهدي" data-en="Dr. Samya Al Nahdi">الدكتورة سامية النهدي</div>
-                    <div class="speaker-role" data-ar="رئيس إدارة الرقابة الشرعية الداخلية في المصرف" data-en="Head of Internal Shari'ah Control Department, Al Masraf">رئيس إدارة الرقابة الشرعية الداخلية في المصرف</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الدكتور محمد البلوشي" data-en="Dr. Mohamed Al Blooshi">الدكتور محمد البلوشي</div>
-                    <div class="speaker-role" data-ar="المدير التنفيذي للأوقاف والزكاة" data-en="Executive Director for Awqaf and Zakat">المدير التنفيذي للأوقاف والزكاة</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الدكتورة مارية القاسم" data-en="H.E Dr. Maria Al Qassim">الدكتورة مارية القاسم</div>
-                    <div class="speaker-role" data-ar="الوكيل المساعد لقطاع السياسات والدراسات الاقتصادية بوزارة الاقتصاد والسياحة" data-en="Assistant Undersecretary, Policies and Economic Studies, Ministry of Economy and Tourism">الوكيل المساعد لقطاع السياسات والدراسات الاقتصادية بوزارة الاقتصاد والسياحة</div>
-                  </div>
-                </div>
-                <div class="speaker-chip">
-                  <div class="speaker-avatar">👤</div>
-                  <div class="speaker-info">
-                    <div class="speaker-name" data-ar="الدكتور فضل رحيم" data-en="Dr. Fazal Rahim">الدكتور فضل رحيم</div>
-                    <div class="speaker-role" data-ar="رئيس إدارة الرقابة الشرعية الداخلية بمصرف عجمان" data-en="Head of Internal Shari'ah Control Department, Ajman Bank">رئيس إدارة الرقابة الشرعية الداخلية بمصرف عجمان</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <!-- Session 2 -->
+    <div class="session-panel" id="panel2" data-search="الجلسة الثانية دور المؤسسات المالية في نمو صناعة الحلال وتنفيذ الاستراتيجية Session 2 Financial Institutions Halal Industry Strategy علي لوتاه أحمد الحداد فؤاد محمد علي العابدين">
+      <div class="sp-header">
+        <h3 data-ar="الجلسة الثانية: دور المؤسسات المالية في نمو صناعة الحلال وتنفيذ الاستراتيجية" data-en="Session 2: The Role of Financial Institutions in Growing the Halal Industry">الجلسة الثانية: دور المؤسسات المالية في نمو صناعة الحلال وتنفيذ الاستراتيجية</h3>
+        <div class="sp-time"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 10:45 – 11:30 AM</div>
+      </div>
+      <div class="topics-block">
+        <div class="topics-label" data-ar="محاور الجلسة" data-en="Session Topics">محاور الجلسة</div>
+        <div class="topic-row"><span class="topic-idx">1</span><span data-ar="تطوير حلول ومنتجات مالية واستثمارية مبتكرة ومتوافقة مع الشريعة لدعم مستهدفات الاستراتيجية" data-en="Innovative Shari'ah-compliant financing and investment solutions supporting the strategy">تطوير حلول ومنتجات مالية واستثمارية مبتكرة ومتوافقة مع الشريعة لدعم مستهدفات الاستراتيجية</span></div>
+        <div class="topic-row"><span class="topic-idx">2</span><span data-ar="تمويل مشاريع وشركات صناعة الحلال ودعم نموها واستثماراتها المستدامة" data-en="Financing halal-industry projects and companies and supporting sustainable growth and investment">تمويل مشاريع وشركات صناعة الحلال ودعم نموها واستثماراتها المستدامة</span></div>
+        <div class="topic-row"><span class="topic-idx">3</span><span data-ar="دور الوقف النقدي في تنفيذ الاستراتيجية وتحقيق الأثر الاقتصادي والاجتماعي المستدام" data-en="The role of cash waqf in delivering sustainable economic and social impact">دور الوقف النقدي في تنفيذ الاستراتيجية وتحقيق الأثر الاقتصادي والاجتماعي المستدام</span></div>
+        <div class="topic-row"><span class="topic-idx">4</span><span data-ar="الشراكات بين المؤسسات المالية والجهات الوطنية والمستثمرين والقطاع الخاص" data-en="Partnerships among financial institutions, national bodies, investors and the private sector">الشراكات بين المؤسسات المالية والجهات الوطنية والمستثمرين والقطاع الخاص</span></div>
+      </div>
+      <div class="speakers-label" data-ar="المتحدثون" data-en="Speakers">المتحدثون</div>
+      <div class="speakers-grid">
+        <div class="speaker-card chair"><div class="sp-avatar">ع.ل</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ علي لوتاه" data-en="Mr. Ali Lootah">الأستاذ علي لوتاه <span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div><div class="sp-role" data-ar="رئيس النافذة الإسلامية في بنك الإمارات دبي الوطني" data-en="Head of Islamic Banking Window, Emirates NBD">رئيس النافذة الإسلامية في بنك الإمارات دبي الوطني</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">أ.ح</div><div class="sp-info"><div class="sp-name" data-ar="فضيلة الدكتور أحمد الحداد" data-en="Sheikh Dr. Ahmad Al Haddad">فضيلة الدكتور أحمد الحداد</div><div class="sp-role" data-ar="رئيس الهيئة العليا الشرعية بمصرف الإمارات المركزي وعضو مجلس الإمارات للإفتاء الشرعي" data-en="Chairman, Higher Shari'ah Authority, CBUAE; Member, UAE Council for Fatwa">رئيس الهيئة العليا الشرعية بمصرف الإمارات المركزي وعضو مجلس الإمارات للإفتاء الشرعي</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">ف.م</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ فؤاد محمد" data-en="Mr. Fuad Mohamed">الأستاذ فؤاد محمد</div><div class="sp-role" data-ar="الرئيس التنفيذي للمصرف العربي للاستثمار والتجارة الخارجية" data-en="Chief Executive Officer, Arab Bank for Investment and Foreign Trade">الرئيس التنفيذي للمصرف العربي للاستثمار والتجارة الخارجية</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">ع.ع</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ علي محمد العابدين" data-en="Mr. Ali Al Abedin">الأستاذ علي محمد العابدين</div><div class="sp-role" data-ar="رئيس النافذة الإسلامية في بنك أبو ظبي الأول" data-en="Head of Islamic Banking, First Abu Dhabi Bank">رئيس النافذة الإسلامية في بنك أبو ظبي الأول</div></div></div>
+      </div>
+    </div>
+
+    <!-- Session 3 -->
+    <div class="session-panel" id="panel3" data-search="الجلسة الثالثة الصكوك والابتكار والتكنولوجيا في المالية الإسلامية وصناعة الحلال Session 3 Sukuk Innovation Technology مصطفى عادل محمد داوود سالم آل علي رفيع الدين شيكو HSBC LSEG DinarStandard">
+      <div class="sp-header">
+        <h3 data-ar="الجلسة الثالثة: الصكوك والابتكار والتكنولوجيا في المالية الإسلامية وصناعة الحلال" data-en="Session 3: Sukuk, Innovation & Technology in Islamic Finance and the Halal Industry">الجلسة الثالثة: الصكوك والابتكار والتكنولوجيا في المالية الإسلامية وصناعة الحلال</h3>
+        <div class="sp-time"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 12:00 – 12:45 PM</div>
+      </div>
+      <div class="topics-block">
+        <div class="topics-label" data-ar="محاور الجلسة" data-en="Session Topics">محاور الجلسة</div>
+        <div class="topic-row"><span class="topic-idx">1</span><span data-ar="تطوير أسواق الصكوك والمنتجات الاستثمارية ودورها في تمويل النمو وتحقيق مستهدفات الاستراتيجية" data-en="Developing sukuk and investment-product markets to finance growth and advance the strategy">تطوير أسواق الصكوك والمنتجات الاستثمارية ودورها في تمويل النمو وتحقيق مستهدفات الاستراتيجية</span></div>
+        <div class="topic-row"><span class="topic-idx">2</span><span data-ar="الابتكار في أدوات الصكوك وتوسيع قاعدة المستثمرين وتعميق أسواق رأس المال الإسلامية" data-en="Innovation in sukuk instruments, broadening the investor base and deepening Islamic capital markets">الابتكار في أدوات الصكوك وتوسيع قاعدة المستثمرين وتعميق أسواق رأس المال الإسلامية</span></div>
+        <div class="topic-row"><span class="topic-idx">3</span><span data-ar="التكنولوجيا المالية والتحول الرقمي في تطوير المنتجات والخدمات المالية الإسلامية" data-en="FinTech and digital transformation in Islamic financial products and services">التكنولوجيا المالية والتحول الرقمي في تطوير المنتجات والخدمات المالية الإسلامية</span></div>
+        <div class="topic-row"><span class="topic-idx">4</span><span data-ar="المنصات والحلول الرقمية المبتكرة وربطها بفرص التمويل والاستثمار في صناعة الحلال" data-en="Innovative digital platforms linking financing and investment opportunities in the halal industry">المنصات والحلول الرقمية المبتكرة وربطها بفرص التمويل والاستثمار في صناعة الحلال</span></div>
+      </div>
+      <div class="speakers-label" data-ar="المتحدثون" data-en="Speakers">المتحدثون</div>
+      <div class="speakers-grid">
+        <div class="speaker-card chair"><div class="sp-avatar">م.ع</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ مصطفى عادل" data-en="Mr. Mustafa Adil">الأستاذ مصطفى عادل <span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div><div class="sp-role" data-ar="رئيس التمويل الإسلامي في مجموعة بورصة لندن للأوراق المالية" data-en="Head of Islamic Finance, London Stock Exchange Group (LSEG)">رئيس التمويل الإسلامي في مجموعة بورصة لندن للأوراق المالية</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">م.د</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ محمد داوود" data-en="Mr. Mohammed Dawood">الأستاذ محمد داوود</div><div class="sp-role" data-ar="رئيس الصيرفة الإسلامية في الشرق الأوسط – HSBC" data-en="Head of Islamic Finance, Middle East, HSBC">رئيس الصيرفة الإسلامية في الشرق الأوسط – HSBC</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">س.ع</div><div class="sp-info"><div class="sp-name" data-ar="الدكتور سالم آل علي" data-en="Dr. Salim Al Ali">الدكتور سالم آل علي</div><div class="sp-role" data-ar="أستاذ مساعد، كلية القانون، جامعة الإمارات" data-en="Assistant Professor, College of Law, UAE University">أستاذ مساعد، كلية القانون، جامعة الإمارات</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">ر.ش</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ رفيع الدين شيكو" data-en="Mr. Rafi Uddin Shikoh">الأستاذ رفيع الدين شيكو</div><div class="sp-role" data-ar="المؤسس والرئيس التنفيذي، شركة دينار ستاندرد" data-en="Founder and CEO, DinarStandard">المؤسس والرئيس التنفيذي، شركة دينار ستاندرد</div></div></div>
+      </div>
+    </div>
+
+    <!-- Session 4 -->
+    <div class="session-panel" id="panel4" data-search="الجلسة الرابعة الحوكمة وإدارة المخاطر تعزيز الثقة واستدامة النمو Session 4 Governance Risk Management سامية النهدي محمد البلوشي مارية القاسم فضل رحيم">
+      <div class="sp-header">
+        <h3 data-ar="الجلسة الرابعة: الحوكمة وإدارة المخاطر – تعزيز الثقة واستدامة النمو" data-en="Session 4: Governance & Risk Management – Building Trust and Sustaining Growth">الجلسة الرابعة: الحوكمة وإدارة المخاطر – تعزيز الثقة واستدامة النمو</h3>
+        <div class="sp-time"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg> 12:45 – 1:30 PM</div>
+      </div>
+      <div class="topics-block">
+        <div class="topics-label" data-ar="محاور الجلسة" data-en="Session Topics">محاور الجلسة</div>
+        <div class="topic-row"><span class="topic-idx">1</span><span data-ar="معايير الحوكمة والرقابة الشرعية على المنتجات والخدمات المالية الإسلامية" data-en="Governance and Shari'ah supervision standards for Islamic financial products and services">معايير الحوكمة والرقابة الشرعية على المنتجات والخدمات المالية الإسلامية</span></div>
+        <div class="topic-row"><span class="topic-idx">2</span><span data-ar="إدارة المخاطر والشفافية في ظل تطور المنتجات والأسواق والحلول المبتكرة" data-en="Risk management and transparency amid evolving products, markets and innovative solutions">إدارة المخاطر والشفافية في ظل تطور المنتجات والأسواق والحلول المبتكرة</span></div>
+        <div class="topic-row"><span class="topic-idx">3</span><span data-ar="تحقيق التوازن بين الابتكار والنمو والامتثال لضمان استدامة القطاع" data-en="Balancing innovation, growth and compliance to ensure sector sustainability">تحقيق التوازن بين الابتكار والنمو والامتثال لضمان استدامة القطاع</span></div>
+      </div>
+      <div class="speakers-label" data-ar="المتحدثون" data-en="Speakers">المتحدثون</div>
+      <div class="speakers-grid">
+        <div class="speaker-card chair"><div class="sp-avatar">س.ن</div><div class="sp-info"><div class="sp-name" data-ar="الدكتورة سامية النهدي" data-en="Dr. Samya Al Nahdi">الدكتورة سامية النهدي <span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div><div class="sp-role" data-ar="رئيس إدارة الرقابة الشرعية الداخلية في المصرف" data-en="Head of Internal Shari'ah Control Department, Al Masraf">رئيس إدارة الرقابة الشرعية الداخلية في المصرف</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">م.ب</div><div class="sp-info"><div class="sp-name" data-ar="الدكتور محمد البلوشي" data-en="Dr. Mohamed Al Blooshi">الدكتور محمد البلوشي</div><div class="sp-role" data-ar="المدير التنفيذي للأوقاف والزكاة" data-en="Executive Director for Awqaf and Zakat">المدير التنفيذي للأوقاف والزكاة</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">م.ق</div><div class="sp-info"><div class="sp-name" data-ar="الدكتورة مارية القاسم" data-en="H.E Dr. Maria Al Qassim">الدكتورة مارية القاسم</div><div class="sp-role" data-ar="الوكيل المساعد لقطاع السياسات والدراسات الاقتصادية بوزارة الاقتصاد والسياحة" data-en="Assistant Undersecretary, Policies and Economic Studies, Ministry of Economy and Tourism">الوكيل المساعد لقطاع السياسات والدراسات الاقتصادية بوزارة الاقتصاد والسياحة</div></div></div>
+        <div class="speaker-card"><div class="sp-avatar">ف.ر</div><div class="sp-info"><div class="sp-name" data-ar="الدكتور فضل رحيم" data-en="Dr. Fazal Rahim">الدكتور فضل رحيم</div><div class="sp-role" data-ar="رئيس إدارة الرقابة الشرعية الداخلية بمصرف عجمان" data-en="Head of Internal Shari'ah Control Department, Ajman Bank">رئيس إدارة الرقابة الشرعية الداخلية بمصرف عجمان</div></div></div>
       </div>
     </div>
   </section>
 
   <!-- ===== OUTCOMES ===== -->
-  <section id="outcomes" class="reveal">
-    <div class="section-header">
+  <section id="outcomes" class="outcomes-section sr">
+    <div class="sec-head">
       <h2 data-ar="المخرجات المتوقعة" data-en="Expected Outcomes">المخرجات المتوقعة</h2>
-      <div class="line"></div>
+      <div class="accent-line"></div>
     </div>
-    <div class="outcomes-list" data-searchable>
-      <div class="outcome-item tilt-card" data-search="صياغة توصيات عملية تعزيز دور المؤسسات المالية Actionable recommendations strengthen role financial institutions">
+    <div class="outcomes-grid" data-searchable>
+      <div class="outcome-card sr" data-search="صياغة توصيات عملية تعزيز دور المؤسسات المالية Actionable recommendations strengthen role financial institutions">
         <div class="outcome-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
         <p data-ar="صياغة مجموعة من التوصيات العملية لتعزيز دور المؤسسات المالية في تنفيذ استراتيجية الإمارات للمالية الإسلامية وصناعة الحلال." data-en="A set of actionable recommendations to strengthen the role of financial institutions in implementing the UAE Strategy for Islamic Finance and the Halal Industry.">صياغة مجموعة من التوصيات العملية لتعزيز دور المؤسسات المالية في تنفيذ استراتيجية الإمارات للمالية الإسلامية وصناعة الحلال.</p>
       </div>
-      <div class="outcome-item tilt-card" data-search="تحديد أولويات التمويل والاستثمار Clear financing investment priorities halal">
+      <div class="outcome-card sr" data-search="تحديد أولويات التمويل والاستثمار Clear financing investment priorities halal">
         <div class="outcome-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
         <p data-ar="تحديد أولويات التمويل والاستثمار في المشاريع والقطاعات المرتبطة بصناعة الحلال." data-en="Clear financing and investment priorities for projects and sectors linked to the halal industry.">تحديد أولويات التمويل والاستثمار في المشاريع والقطاعات المرتبطة بصناعة الحلال.</p>
       </div>
-      <div class="outcome-item tilt-card" data-search="تقديم توصيات تطوير أسواق الصكوك Recommendations develop sukuk markets">
+      <div class="outcome-card sr" data-search="تقديم توصيات تطوير أسواق الصكوك Recommendations develop sukuk markets">
         <div class="outcome-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
         <p data-ar="تقديم توصيات لتطوير أسواق الصكوك وتعزيز دورها في تمويل النمو والاستثمار." data-en="Recommendations to develop sukuk markets and enhance their role in financing growth and investment.">تقديم توصيات لتطوير أسواق الصكوك وتعزيز دورها في تمويل النمو والاستثمار.</p>
       </div>
-      <div class="outcome-item tilt-card" data-search="الابتكار المالي التكنولوجي Financial technological innovation priorities">
+      <div class="outcome-card sr" data-search="الابتكار المالي التكنولوجي Financial technological innovation priorities">
         <div class="outcome-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
         <p data-ar="تحديد أولويات واضحة للابتكار المالي والتكنولوجي في المنتجات والخدمات المتوافقة مع الشريعة، بما يخدم الاقتصاد الحلال." data-en="Clear priorities for financial and technological innovation in Shari'ah-compliant products and services serving the halal economy.">تحديد أولويات واضحة للابتكار المالي والتكنولوجي في المنتجات والخدمات المتوافقة مع الشريعة، بما يخدم الاقتصاد الحلال.</p>
       </div>
-      <div class="outcome-item tilt-card" data-search="آليات عملية تعزيز التمويل الإسلامي المشاريع الحلال Practical mechanisms expand Islamic finance halal projects">
+      <div class="outcome-card sr" data-search="آليات عملية تعزيز التمويل الإسلامي المشاريع الحلال Practical mechanisms expand Islamic finance halal projects">
         <div class="outcome-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
         <p data-ar="اقتراح آليات عملية لتعزيز التمويل الإسلامي للمشاريع الحلال ودعم الشركات ورواد الأعمال والمستثمرين في القطاع." data-en="Practical mechanisms to expand Islamic finance for halal projects and support companies, entrepreneurs and investors.">اقتراح آليات عملية لتعزيز التمويل الإسلامي للمشاريع الحلال ودعم الشركات ورواد الأعمال والمستثمرين في القطاع.</p>
       </div>
-      <div class="outcome-item tilt-card" data-search="تعزيز الحوكمة إدارة المخاطر الشفافية Stronger governance risk management transparency">
+      <div class="outcome-card sr" data-search="تعزيز الحوكمة إدارة المخاطر الشفافية Stronger governance risk management transparency">
         <div class="outcome-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
         <p data-ar="تعزيز الحوكمة وإدارة المخاطر والشفافية بما يدعم الثقة واستدامة نمو القطاع." data-en="Stronger governance, risk management and transparency to build confidence and support sustainable sector growth.">تعزيز الحوكمة وإدارة المخاطر والشفافية بما يدعم الثقة واستدامة نمو القطاع.</p>
       </div>
-      <div class="outcome-item tilt-card" data-search="تعزيز التنسيق الشراكات الجهات التنظيمية المؤسسات المالية Closer coordination partnerships regulators financial institutions">
+      <div class="outcome-card sr" style="grid-column:span 2" data-search="تعزيز التنسيق الشراكات الجهات التنظيمية المؤسسات المالية Closer coordination partnerships regulators financial institutions">
         <div class="outcome-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
         <p data-ar="تعزيز التنسيق والشراكات بين الجهات التنظيمية والمؤسسات المالية والجهات الوطنية والقطاع الخاص بما يدعم التطبيق الفعال للاستراتيجية." data-en="Closer coordination and partnerships among regulators, financial institutions, national bodies and the private sector to support effective strategy implementation.">تعزيز التنسيق والشراكات بين الجهات التنظيمية والمؤسسات المالية والجهات الوطنية والقطاع الخاص بما يدعم التطبيق الفعال للاستراتيجية.</p>
       </div>
@@ -1457,26 +1449,14 @@ body {
   </section>
 
   <!-- ===== CONTACT ===== -->
-  <section id="contact" class="reveal">
+  <section id="contact" class="sr">
     <div class="contact-section">
       <h3 data-ar="للتسجيل يرجى التواصل" data-en="Registration">للتسجيل يرجى التواصل</h3>
-      <div class="contact-links">
-        <a href="mailto:banks@ubf.ae" class="contact-chip">
-          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-          banks@ubf.ae
-        </a>
-        <a href="mailto:alaa@ubf.ae" class="contact-chip">
-          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-          alaa@ubf.ae
-        </a>
-        <a href="https://www.almasraf.ae" target="_blank" class="contact-chip">
-          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
-          www.almasraf.ae
-        </a>
-        <a href="https://www.ubf.ae" target="_blank" class="contact-chip">
-          <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
-          www.ubf.ae
-        </a>
+      <div class="contact-grid">
+        <a href="mailto:banks@ubf.ae" class="contact-chip"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> banks@ubf.ae</a>
+        <a href="mailto:alaa@ubf.ae" class="contact-chip"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg> alaa@ubf.ae</a>
+        <a href="https://www.almasraf.ae" target="_blank" class="contact-chip"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> www.almasraf.ae</a>
+        <a href="https://www.ubf.ae" target="_blank" class="contact-chip"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> www.ubf.ae</a>
       </div>
     </div>
   </section>
@@ -1489,225 +1469,259 @@ body {
 
 <script>
 // ===== LANGUAGE SYSTEM =====
-let currentLang = (() => {
-  try {
-    const saved = localStorage.getItem('confLang');
-    if (saved) return saved;
-  } catch(e) {}
+let lang = (() => {
+  try { const s = localStorage.getItem('confLang'); if (s) return s; } catch(e) {}
   const dl = (navigator.languages?.[0] || navigator.language || 'ar').slice(0,2);
   return dl === 'en' ? 'en' : 'ar';
 })();
 
-function applyLang(lang) {
-  currentLang = lang;
-  try { localStorage.setItem('confLang', lang); } catch(e){}
-  document.documentElement.lang = lang;
-  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-  document.getElementById('langToggle').textContent = lang === 'ar' ? 'English' : 'العربية';
+function applyLang(l) {
+  lang = l;
+  try { localStorage.setItem('confLang', l); } catch(e){}
+  document.documentElement.lang = l;
+  document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('langToggle').textContent = l === 'ar' ? 'English' : 'العربية';
   document.querySelectorAll('[data-ar]').forEach(el => {
-    const t = el.dataset[lang];
+    const t = el.dataset[l];
     if (t) el.innerHTML = t;
   });
   const si = document.getElementById('searchInput');
-  if (si) si.placeholder = si.dataset[`placeholder${lang === 'ar' ? 'Ar' : 'En'}`] || si.placeholder;
+  if (si) si.placeholder = si.dataset[`placeholder${l === 'ar' ? 'Ar' : 'En'}`] || si.placeholder;
 }
 
-function toggleLang() {
-  applyLang(currentLang === 'ar' ? 'en' : 'ar');
+function toggleLang() { applyLang(lang === 'ar' ? 'en' : 'ar'); }
+
+// ===== COUNTDOWN TIMER =====
+const confDate = new Date('2026-09-30T08:00:00+04:00').getTime();
+
+function updateCountdown() {
+  const now = Date.now();
+  const diff = confDate - now;
+  if (diff <= 0) {
+    document.getElementById('countdown').style.display = 'none';
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+
+  const dEl = document.getElementById('cdDays');
+  const hEl = document.getElementById('cdHours');
+  const mEl = document.getElementById('cdMins');
+  const sEl = document.getElementById('cdSecs');
+
+  if (dEl.textContent !== String(d)) { dEl.textContent = d; dEl.style.transform = 'scale(1.15)'; setTimeout(() => dEl.style.transform = '', 200); }
+  if (hEl.textContent !== String(h).padStart(2,'0')) { hEl.textContent = String(h).padStart(2,'0'); }
+  if (mEl.textContent !== String(m).padStart(2,'0')) { mEl.textContent = String(m).padStart(2,'0'); }
+  sEl.textContent = String(s).padStart(2,'0');
 }
 
-// ===== PARALLAX BACKGROUND ELEMENTS =====
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ===== READING PROGRESS BAR =====
+const progressBar = document.getElementById('progressBar');
+
+function updateProgress() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  progressBar.style.width = progress + '%';
+}
+
+// ===== PARALLAX =====
 const meshTR = document.getElementById('meshTR');
 const meshBL = document.getElementById('meshBL');
 const skyline = document.getElementById('skyline');
-const bgLines = document.getElementById('bgLines');
-
-let lastScrollY = 0;
-let ticking = false;
+let rafTicking = false;
 
 function updateParallax() {
   const sy = window.scrollY;
-  const factor = sy * 0.15;
-  meshTR.style.transform = `translate(${factor * 0.3}px, ${factor * 0.5}px)`;
-  meshBL.style.transform = `translate(${-factor * 0.2}px, ${-factor * 0.4}px)`;
-  skyline.style.transform = `translateY(${-factor * 0.6}px)`;
-  bgLines.style.transform = `translateY(${factor * 0.2}px)`;
-  ticking = false;
+  const f = sy * 0.12;
+  meshTR.style.transform = `translate(${f * 0.25}px, ${f * 0.4}px)`;
+  meshBL.style.transform = `translate(${-f * 0.15}px, ${-f * 0.35}px)`;
+  skyline.style.transform = `translateY(${-f * 0.5}px)`;
+  rafTicking = false;
 }
 
+// ===== SCROLL HANDLER =====
+const scrollTopBtn = document.getElementById('scrollTop');
+const navBar = document.getElementById('navBar');
+const pills = document.querySelectorAll('.nav-pill');
+const sectionIds = ['objectives','schedule','sessions','outcomes','contact'];
+
 window.addEventListener('scroll', () => {
-  if (!ticking) {
-    requestAnimationFrame(updateParallax);
-    ticking = true;
-  }
+  if (!rafTicking) { requestAnimationFrame(() => { updateParallax(); updateProgress(); }); rafTicking = true; }
+
+  scrollTopBtn.classList.toggle('visible', window.scrollY > 600);
+  navBar.classList.toggle('scrolled', window.scrollY > 100);
+
+  // Active nav
+  let cur = '';
+  sectionIds.forEach(id => {
+    const sec = document.getElementById(id);
+    if (sec && sec.getBoundingClientRect().top <= 200) cur = id;
+  });
+  pills.forEach(p => p.classList.toggle('active', p.dataset.target === cur));
 }, { passive: true });
 
-// ===== PARTICLE CANVAS BACKGROUND =====
+// ===== PARTICLE CANVAS =====
 const canvas = document.getElementById('particleCanvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
 let mouse = { x: -9999, y: -9999 };
 let W, H;
 
-function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
 resize();
 window.addEventListener('resize', resize);
 
 class Particle {
-  constructor() {
-    this.reset();
-  }
+  constructor() { this.reset(); }
   reset() {
     this.x = Math.random() * W;
     this.y = Math.random() * H;
-    this.size = Math.random() * 2 + 0.5;
-    this.speedX = (Math.random() - 0.5) * 0.3;
-    this.speedY = (Math.random() - 0.5) * 0.3;
-    this.opacity = Math.random() * 0.5 + 0.1;
+    this.size = Math.random() * 1.8 + 0.4;
+    this.vx = (Math.random() - 0.5) * 0.25;
+    this.vy = (Math.random() - 0.5) * 0.25;
+    this.opacity = Math.random() * 0.45 + 0.08;
   }
   update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
+    this.x += this.vx;
+    this.y += this.vy;
     const dx = this.x - mouse.x;
     const dy = this.y - mouse.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 180) {
-      const force = (180 - dist) / 180;
-      this.x += (dx / dist) * force * 2;
-      this.y += (dy / dist) * force * 2;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < 200) {
+      const force = (200 - dist) / 200;
+      this.x += (dx / dist) * force * 2.5;
+      this.y += (dy / dist) * force * 2.5;
     }
-    if (this.x < 0 || this.x > W) this.speedX *= -1;
-    if (this.y < 0 || this.y > H) this.speedY *= -1;
+    if (this.x < 0 || this.x > W) this.vx *= -1;
+    if (this.y < 0 || this.y > H) this.vy *= -1;
   }
   draw() {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(46, 204, 113, ${this.opacity})`;
+    ctx.fillStyle = `rgba(29, 185, 84, ${this.opacity})`;
     ctx.fill();
   }
 }
 
-const particleCount = Math.min(120, Math.floor((W * H) / 12000));
-for (let i = 0; i < particleCount; i++) {
-  particles.push(new Particle());
-}
+const pCount = Math.min(100, Math.floor((W * H) / 14000));
+for (let i = 0; i < pCount; i++) particles.push(new Particle());
 
 function drawConnections() {
   for (let i = 0; i < particles.length; i++) {
     for (let j = i + 1; j < particles.length; j++) {
       const dx = particles[i].x - particles[j].x;
       const dy = particles[i].y - particles[j].y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 140) {
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 130) {
         ctx.beginPath();
         ctx.moveTo(particles[i].x, particles[i].y);
         ctx.lineTo(particles[j].x, particles[j].y);
-        ctx.strokeStyle = `rgba(46, 204, 113, ${0.08 * (1 - dist / 140)})`;
-        ctx.lineWidth = 0.5;
+        ctx.strokeStyle = `rgba(29, 185, 84, ${0.06 * (1 - dist / 130)})`;
+        ctx.lineWidth = 0.4;
         ctx.stroke();
       }
     }
   }
 }
 
-function animateParticles() {
+function animLoop() {
   ctx.clearRect(0, 0, W, H);
   particles.forEach(p => { p.update(); p.draw(); });
   drawConnections();
-  requestAnimationFrame(animateParticles);
+  requestAnimationFrame(animLoop);
 }
-animateParticles();
+animLoop();
 
-// ===== MOUSE / TOUCH TRACKING =====
+// ===== MOUSE TRACKING =====
 const cursorGlow = document.getElementById('cursorGlow');
-document.addEventListener('mousemove', (e) => {
+document.addEventListener('mousemove', e => {
   mouse.x = e.clientX;
   mouse.y = e.clientY;
-  if (cursorGlow) {
-    cursorGlow.style.left = e.clientX + 'px';
-    cursorGlow.style.top = e.clientY + 'px';
-  }
+  if (cursorGlow) { cursorGlow.style.left = e.clientX + 'px'; cursorGlow.style.top = e.clientY + 'px'; }
 });
 
-document.addEventListener('touchmove', (e) => {
-  const t = e.touches[0];
-  if (t) {
-    mouse.x = t.clientX;
-    mouse.y = t.clientY;
-  }
-}, { passive: true });
+document.addEventListener('touchmove', e => { const t = e.touches[0]; if (t) { mouse.x = t.clientX; mouse.y = t.clientY; } }, { passive: true });
+document.addEventListener('touchend', () => { mouse.x = -9999; mouse.y = -9999; }, { passive: true });
 
-document.addEventListener('touchend', () => {
-  mouse.x = -9999;
-  mouse.y = -9999;
-}, { passive: true });
-
-// ===== 3D TILT EFFECT =====
+// ===== 3D TILT =====
 function initTilt() {
-  if (window.innerWidth < 768) return; // Skip on mobile
-  document.querySelectorAll('.tilt-card').forEach(card => {
-    card.addEventListener('mousemove', (e) => {
+  if (window.innerWidth < 768 || window.matchMedia('(hover: none)').matches) return;
+  document.querySelectorAll('.obj-card, .tl-card, .outcome-card, .speaker-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
       const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -4;
-      const rotateY = ((x - centerX) / centerX) * 4;
-      card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01,1.01,1.01)`;
-      card.style.boxShadow = `0 8px 30px rgba(0,0,0,0.3), inset 0 0 60px rgba(46,204,113,${0.02 + Math.abs(rotateX + rotateY) * 0.003})`;
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `perspective(600px) rotateX(${y * -6}deg) rotateY(${x * 6}deg) translateY(-3px) scale(1.01)`;
     });
     card.addEventListener('mouseleave', () => {
-      card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale3d(1,1,1)';
-      card.style.boxShadow = '';
-      card.style.transition = 'transform 0.5s ease, box-shadow 0.5s ease';
+      card.style.transform = '';
+      card.style.transition = 'transform 0.5s cubic-bezier(0.22,1,0.36,1)';
     });
     card.addEventListener('mouseenter', () => {
-      card.style.transition = 'transform 0.1s ease, box-shadow 0.1s ease';
+      card.style.transition = 'transform 0.08s ease-out';
     });
   });
 }
 
 // ===== SCROLL REVEAL =====
 function initReveal() {
-  const observer = new IntersectionObserver((entries) => {
+  const obs = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
       }
     });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-  document.querySelectorAll('.timeline-item').forEach((item, i) => {
-    item.style.animationDelay = `${i * 0.1}s`;
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.sr, .sr-left, .sr-right, .sr-scale').forEach((el, i) => {
+    el.style.transitionDelay = `${Math.min(i * 0.06, 0.4)}s`;
+    obs.observe(el);
+  });
+}
+
+// ===== HERO ANIMATION =====
+function animateHero() {
+  const els = ['.hero-badge', '.hero-org', '.hero-title', '.hero-subtitle', '.hero-meta', '.countdown', '.hero-scroll'];
+  els.forEach((sel, i) => {
+    const el = document.querySelector(sel);
+    if (el) {
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1)';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 200 + i * 120);
+    }
   });
 }
 
 // ===== NAV PILLS =====
-function initNav() {
-  const pills = document.querySelectorAll('.nav-pill');
-  pills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      pills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      const target = document.getElementById(pill.dataset.target);
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+pills.forEach(pill => {
+  pill.addEventListener('click', () => {
+    const target = document.getElementById(pill.dataset.target);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// ===== SESSION TABS =====
+function initSessionTabs() {
+  const tabs = document.querySelectorAll('.stab');
+  const panels = document.querySelectorAll('.session-panel');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      const panel = document.getElementById(tab.dataset.panel);
+      if (panel) panel.classList.add('active');
     });
   });
-  const sections = ['objectives','schedule','sessions','outcomes','contact'];
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(id => {
-      const sec = document.getElementById(id);
-      if (sec && sec.getBoundingClientRect().top <= 180) current = id;
-    });
-    pills.forEach(p => {
-      p.classList.toggle('active', p.dataset.target === current);
-    });
-  }, { passive: true });
 }
 
 // ===== SEARCH =====
@@ -1718,33 +1732,38 @@ function initSearch() {
     const q = input.value.toLowerCase().trim();
     let found = 0;
     document.querySelectorAll('[data-search]').forEach(el => {
-      const searchText = (el.dataset.search + ' ' + el.textContent).toLowerCase();
-      const match = !q || searchText.includes(q);
+      const text = (el.dataset.search + ' ' + el.textContent).toLowerCase();
+      const match = !q || text.includes(q);
       el.style.display = match ? '' : 'none';
       if (match) found++;
     });
     noResults.style.display = (q && found === 0) ? 'block' : 'none';
-  });
-}
 
-// ===== SCROLL TOP =====
-function initScrollTop() {
-  const btn = document.getElementById('scrollTop');
-  window.addEventListener('scroll', () => {
-    btn.classList.toggle('visible', window.scrollY > 500);
-  }, { passive: true });
+    // If search matches a session panel, activate it
+    if (q) {
+      document.querySelectorAll('.session-panel').forEach(p => {
+        if (p.style.display !== 'none') {
+          const tabs = document.querySelectorAll('.stab');
+          const panels = document.querySelectorAll('.session-panel');
+          tabs.forEach(t => t.classList.remove('active'));
+          panels.forEach(pp => pp.classList.remove('active'));
+          p.classList.add('active');
+          const matchTab = document.querySelector(`[data-panel="${p.id}"]`);
+          if (matchTab) matchTab.classList.add('active');
+        }
+      });
+    }
+  });
 }
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
-  applyLang(currentLang);
+  applyLang(lang);
+  animateHero();
   initTilt();
   initReveal();
-  initNav();
+  initSessionTabs();
   initSearch();
-  initScrollTop();
-  const firstSession = document.querySelector('.session-card');
-  if (firstSession) firstSession.classList.add('open');
 });
 </script>
 </body>
