@@ -1051,29 +1051,25 @@ function chrome(){
 }
 
 /* =========================================================
-   DIGITAL CURRENT — one continuous ribbon of data.
+   DIGITAL CURRENT — a double helix of data, like a DNA strand.
 
-   It enters off the right edge along the bottom of the screen,
-   runs right-to-left, wraps around the OUTSIDE of the left edge,
-   climbs, re-enters below the top-left corner, passes through
-   that corner and leaves off the top.
+   Two strands wind around one another along a single path: in
+   off the right edge, right-to-left along the bottom, around
+   the outside of the left edge, up, through the top-left
+   corner and off the top.
 
-   The ribbon is a helix: every character rides a rotation about
-   the spine, so it swings to the front (bright, larger) and
-   behind (dim, smaller) as it travels — which is what reads as
-   a spiral rather than a flat line.
-
-   The characters are small and precise, falling in short trains
-   with a bright head and a fading tail, Matrix-style. Scrolling
-   drives the whole current.
+   The twist is coherent — one shared rotation driven by
+   position along the path, the two strands exactly opposite
+   each other — so it reads as a helix, never as characters
+   tumbling on their own axis. Faint rungs tie the strands
+   together at intervals. Scrolling drives the whole strand.
    ========================================================= */
 const cc = document.getElementById('cornerCanvas');
 const cx = cc.getContext('2d');
-let CW=0, CH=0, spine=[], trains=[];
+let CW=0, CH=0, spine=[], pairs=[], pathLen=0, twists=1;
 
 const TAU = 6.28318;
 
-// digits and code symbols, plus half-width katakana for the Matrix cadence
 const GLYPHS = (
   '0123456789' + '0101010101' +
   'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ' +
@@ -1090,81 +1086,56 @@ function sizeCorners(){
   cx.setTransform(dpr,0,0,dpr,0,0);
 }
 
-/* ---- the spine, sampled once per resize ----
-   Entry off the right edge → runs right-to-left along the bottom →
-   ONE loop → continues left → wraps outside the left edge → rises →
-   through the top-left corner → off the top. A single turn in the
-   whole journey; the characters never spin about themselves. */
+/* ---- one smooth path: bottom run, around the left edge, up and out ---- */
 function buildSpine(){
-  const pts = [];
-  const push = (x,y) => pts.push({x,y});
-
-  const baseY = CH - 46;
-
-  // --- A. the bottom run, right to left, with a soft swell ---
-  const ax0 = CW + 150, ax1 = CW*0.30;
-  for (let i=0;i<=70;i++){
-    const t = i/70;
-    const x = ax0 + (ax1-ax0)*t;
-    push(x, baseY - Math.sin(t*Math.PI)*16);
-  }
-
-  // --- B. the single loop ---
-  const R  = Math.min(64, CH*0.085);
-  const lx = CW*0.30 - R*0.15;
-  const ly = baseY - R;
-  for (let i=0;i<=72;i++){
-    const th = (Math.PI/2) + (i/72)*Math.PI*2;      // starts and ends tangent to the run
-    push(lx + Math.cos(th)*R, ly + Math.sin(th)*R);
-  }
-
-  // --- C. carry on left, then wrap outside the left edge ---
-  const C = [
-    [CW*0.30 - R*0.15, baseY],
-    [CW*0.16, baseY - 6],
-    [CW*0.05, baseY - 34],
-    [-16,     CH*0.80],
+  const P = [
+    [CW+150, CH-44],
+    [CW*0.76, CH-32],
+    [CW*0.50, CH-46],
+    [CW*0.26, CH-40],
+    [CW*0.09, CH-66],
+    [-14,     CH*0.80],
     [-40,     CH*0.56],
-    [-34,     CH*0.34],
-    [ -2,     CH*0.19],
-    [ 42,     CH*0.085],
-    [ 82,     CH*0.015],
-    [104,     -130]
+    [-32,     CH*0.34],
+    [  0,     CH*0.19],
+    [ 44,     CH*0.085],
+    [ 84,     CH*0.012],
+    [106,     -130]
   ];
-  for (let i=0;i<C.length-1;i++){
-    const p0=C[i>0?i-1:0], p1=C[i], p2=C[i+1], p3=C[i+2<C.length?i+2:C.length-1];
-    for (let k=0;k<24;k++){
-      const t=k/24, t2=t*t, t3=t2*t;
-      push(
-        0.5*((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
-        0.5*((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)
-      );
+
+  const pts = [];
+  for (let i=0;i<P.length-1;i++){
+    const p0=P[i>0?i-1:0], p1=P[i], p2=P[i+1], p3=P[i+2<P.length?i+2:P.length-1];
+    for (let k=0;k<28;k++){
+      const t=k/28, t2=t*t, t3=t2*t;
+      pts.push({
+        x: 0.5*((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+        y: 0.5*((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)
+      });
     }
   }
-  push(C[C.length-1][0], C[C.length-1][1]);
+  pts.push({x:P[P.length-1][0], y:P[P.length-1][1]});
 
-  // tangents, normals, arc length
   let total = 0;
   for (let i=0;i<pts.length;i++){
-    const a = pts[Math.max(0,i-1)], b = pts[Math.min(pts.length-1,i+1)];
+    const a=pts[Math.max(0,i-1)], b=pts[Math.min(pts.length-1,i+1)];
     let dx=b.x-a.x, dy=b.y-a.y;
-    const m = Math.hypot(dx,dy) || 1;
-    dx/=m; dy/=m;
+    const m=Math.hypot(dx,dy)||1; dx/=m; dy/=m;
     pts[i].nx=-dy; pts[i].ny=dx;
     if (i>0) total += Math.hypot(pts[i].x-pts[i-1].x, pts[i].y-pts[i-1].y);
-    pts[i].s = total;
+    pts[i].s=total;
   }
   for (let i=0;i<pts.length;i++) pts[i].u = pts[i].s/total;
   spine = pts;
+  pathLen = total;
+  // one full twist roughly every 230px of path — reads as a helix, not a drill
+  twists = Math.max(4, Math.round(total/200));
 }
 
 function onSpine(u){
-  if (u < 0) u += Math.ceil(-u);
-  u = u % 1;
+  u = u - Math.floor(u);
   const f = u*(spine.length-1);
-  const i = f|0;
-  const j = Math.min(spine.length-1, i+1);
-  const k = f-i;
+  const i = f|0, j = Math.min(spine.length-1, i+1), k = f-i;
   const a = spine[i], b = spine[j];
   return {
     x: a.x + (b.x-a.x)*k,
@@ -1175,28 +1146,25 @@ function onSpine(u){
   };
 }
 
+let flowU = 0;
+
 function buildCorners(){
   buildSpine();
-  trains = [];
-  const N = Math.round(64 + CW/20);
-  for (let i=0;i<N;i++){
-    trains.push({
-      u: Math.random(),
-      len: 7 + (Math.random()*13|0),
-      gap: 0.0042 + Math.random()*0.0026,
-      speed: 0.00042 + Math.random()*0.00050,
-      lane: (Math.random()*2-1),            // -1..1 across the ribbon
-      depth: Math.random()*2-1,             // fixed: near the viewer … far back
-      phase: Math.random()*TAU,
-      chars: [],
-      swapAt: 0
+  pairs = [];
+  // one base pair every ~15px of path
+  const n = Math.max(60, Math.round(pathLen/15));
+  for (let i=0;i<n;i++){
+    pairs.push({
+      u0: i/n,
+      a: GLYPHS[(Math.random()*GLYPHS.length)|0],
+      b: GLYPHS[(Math.random()*GLYPHS.length)|0],
+      swapAt: performance.now() + Math.random()*2600,
+      rung: (i % 2) === 0
     });
   }
-  for (const tr of trains){
-    for (let i=0;i<tr.len;i++) tr.chars.push(GLYPHS[(Math.random()*GLYPHS.length)|0]);
-    tr.swapAt = performance.now() + Math.random()*900;
-  }
 }
+
+const SZ = [8.5, 10, 11.5];
 
 function drawCorners(boost){
   if (!spine.length) return;
@@ -1204,84 +1172,100 @@ function drawCorners(boost){
 
   const now = performance.now();
   const t = now/1000;
-  const push = vel * 0.00052;               // scrolling drives the current
+
+  // the strand travels; scrolling drives it
+  flowU += 0.00016 + vel*0.00042;
+  if (flowU > 1) flowU -= 1; else if (flowU < 0) flowU += 1;
+
+  const spin = t*0.10;                      // the helix turns very slowly on its own
   const mid = CW/2, half = Math.min(470, CW*0.44);
 
   cx.textAlign = 'center';
   cx.textBaseline = 'middle';
 
-  // three size classes keep the font switches down
-  const SZ = [8.5, 10.5, 12.5];
-  const layers = [[],[],[]];
+  const back = [[],[],[]];    // strand behind
+  const front = [[],[],[]];   // strand in front
+  const rungs = [];
 
-  for (let ti=0; ti<trains.length; ti++){
-    const tr = trains[ti];
+  for (let i=0;i<pairs.length;i++){
+    const pr = pairs[i];
+    const u = pr.u0 + flowU;
+    const p = onSpine(u);
 
-    tr.u += tr.speed + push;
-    if (tr.u > 1) tr.u -= 1; else if (tr.u < 0) tr.u += 1;
+    // ribbon radius: wider along the open bottom run, tighter at the corner
+    const R = 15 + 17*Math.sin(p.u*Math.PI);
 
-    // the characters rewrite themselves, faster while the page moves
-    if (now > tr.swapAt){
-      tr.chars[(Math.random()*tr.len)|0] = GLYPHS[(Math.random()*GLYPHS.length)|0];
-      tr.swapAt = now + 40 + Math.random()*(260 - boost*190);
-    }
+    // ONE shared rotation — this is what makes it a helix and not a tumble
+    const th = p.u*TAU*twists + spin;
 
-    for (let i=0;i<tr.len;i++){
-      const u = tr.u - i*tr.gap;
-      const p = onSpine(u);
+    // fade the whole strand out where the reading column is
+    const fadeAt = (x) => {
+      const d = Math.abs(x - mid);
+      const c = d < half ? d/half : 1;
+      return 0.05 + 0.95*c*c;
+    };
 
-      // ribbon width: broad along the bottom run, tightening toward the corner
-      const width = 13 + 14*Math.sin(p.u*Math.PI);
-
-      // the strand keeps its own lane across the ribbon and only breathes
-      // gently — no spinning about the spine
-      const sway = Math.sin(p.u*TAU*0.9 + tr.phase + t*0.22) * 0.18;
-      const off = (tr.lane + sway) * width;
-
-      // depth comes from the lane, steady per strand, so nothing tumbles
-      const depth = tr.depth;
-
+    // the two strands, exactly opposite
+    const ends = [];
+    for (let k=0;k<2;k++){
+      const ph = th + k*Math.PI;
+      const off = Math.cos(ph)*R;
+      const dep = Math.sin(ph);                  // +1 nearest … -1 furthest
       const x = p.x + p.nx*off;
       const y = p.y + p.ny*off;
+      const nearF = 0.5 + 0.5*dep;
 
-      if (x < -60 || x > CW+60 || y < -60 || y > CH+60) continue;
+      let op = (0.07 + 0.34*nearF) * (0.72 + boost*0.55) * fadeAt(x);
+      // ease the strand away at the very ends of the path
+      op *= Math.min(1, Math.min(p.u, 1-p.u)*14);
 
-      const front = 0.5 + 0.5*depth;              // 0 behind … 1 in front
-      const head  = i === 0 ? 1 : 0;
-      const tail  = 1 - i/tr.len;                 // fades down the train
+      ends.push({x, y, op, dep, nearF, ch: k ? pr.b : pr.a});
+    }
 
-      let op = (0.045 + 0.24*front) * (0.18 + 0.82*tail*tail) * (0.62 + boost*0.55);
+    if (pr.rung){
+      const o = Math.min(ends[0].op, ends[1].op) * 0.75;
+      if (o > 0.012) rungs.push(ends[0].x, ends[0].y, ends[1].x, ends[1].y, o);
+    }
 
-      // never crowd the reading column
-      const dxc = Math.abs(x - mid);
-      let clear = dxc < half ? dxc/half : 1;
-      op *= 0.05 + 0.95*clear*clear;
-
-      if (op < 0.012) continue;
-      if (op > 0.40) op = 0.40;
-
-      const cls = depth > 0.35 ? 2 : depth > -0.3 ? 1 : 0;
-      layers[cls].push(x, y, op, tr.chars[i], head);
+    for (const e of ends){
+      if (e.op < 0.012) continue;
+      if (e.op > 0.46) e.op = 0.46;
+      const cls = e.nearF > 0.72 ? 2 : e.nearF > 0.34 ? 1 : 0;
+      (e.dep >= 0 ? front : back)[cls].push(e.x, e.y, e.op, e.ch);
     }
   }
 
-  for (let l=0;l<3;l++){
-    const L = layers[l];
-    if (!L.length) continue;
-    cx.font = '500 ' + (SZ[l]*(1+boost*0.06)).toFixed(1) + 'px ' + MONO;
-    for (let i=0;i<L.length;i+=5){
-      const op = L[i+2];
-      if (L[i+4]){
-        // the leading character burns brighter, as the rain does
-        cx.shadowColor = 'rgba(80,255,150,0.45)';
-        cx.shadowBlur = 4;
-        cx.fillStyle = 'rgba(175,245,200,' + Math.min(0.52, op+0.15).toFixed(3) + ')';
-        cx.fillText(L[i+3], L[i], L[i+1]);
-        cx.shadowBlur = 0;
-      } else {
-        cx.fillStyle = 'rgba(37,214,102,' + op.toFixed(3) + ')';
+  // rungs first, underneath everything
+  cx.lineWidth = 0.6;
+  for (let i=0;i<rungs.length;i+=5){
+    cx.beginPath();
+    cx.moveTo(rungs[i], rungs[i+1]);
+    cx.lineTo(rungs[i+2], rungs[i+3]);
+    cx.strokeStyle = 'rgba(37,214,102,' + rungs[i+4].toFixed(3) + ')';
+    cx.stroke();
+  }
+
+  // far strand, then near strand
+  for (const group of [back, front]){
+    for (let l=0;l<3;l++){
+      const L = group[l];
+      if (!L.length) continue;
+      cx.font = '500 ' + (SZ[l]*(1+boost*0.05)).toFixed(1) + 'px ' + MONO;
+      for (let i=0;i<L.length;i+=4){
+        cx.fillStyle = 'rgba(37,214,102,' + L[i+2].toFixed(3) + ')';
         cx.fillText(L[i+3], L[i], L[i+1]);
       }
+    }
+  }
+
+  // the characters rewrite themselves, faster while the page moves
+  const budget = 3 + (boost*10|0);
+  for (let k=0;k<budget;k++){
+    const pr = pairs[(Math.random()*pairs.length)|0];
+    if (now > pr.swapAt){
+      if (Math.random() < 0.5) pr.a = GLYPHS[(Math.random()*GLYPHS.length)|0];
+      else                     pr.b = GLYPHS[(Math.random()*GLYPHS.length)|0];
+      pr.swapAt = now + 300 + Math.random()*(2600 - boost*1800);
     }
   }
 }
