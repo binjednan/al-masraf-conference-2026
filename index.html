@@ -1039,14 +1039,25 @@ function chrome(){
 }
 
 /* =========================================================
-   GREEN CORNER MARKINGS — the only reactive part of the
-   background. The artwork underneath never moves. These dot
-   fans sit in the corners exactly as they do in the artwork
-   and answer to scrolling and to the pointer.
+   GREEN CORNER GLYPHS — the only reactive part of the
+   background. The artwork underneath never moves.
+
+   The marks are digital symbols — binary, hex, brackets,
+   Arabic-Indic digits — sitting in the corners exactly where
+   the artwork's own green markings sit. They travel on a
+   wave, glide rather than jump, scramble like live data, and
+   their brightness rises and falls so the field never reads
+   flat. Scrolling and the pointer drive all of it.
    ========================================================= */
 const cc = document.getElementById('cornerCanvas');
 const cx = cc.getContext('2d');
 let CW=0, CH=0, nodes=[];
+
+const GLYPHS = ['0','1','0','1','0','1','٠','١','1','0',
+                '<','>','/','{','}','[',']','+','=',':',
+                'A','F','E','C','D','B','x','7','2','9'];
+
+const MONO = '"IBM Plex Sans Arabic", ui-monospace, "SF Mono", Menlo, monospace';
 
 function sizeCorners(){
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1056,9 +1067,20 @@ function sizeCorners(){
   cx.setTransform(dpr,0,0,dpr,0,0);
 }
 
-// a node of the marking: a fixed home position it always returns to
-function node(x, y, size, op, depth){
-  return { hx:x, hy:y, x:x, y:y, size:size, op:op, depth:depth, ox:0, oy:0 };
+function mark(x, y, size, op, depth, glyphChance){
+  const isGlyph = Math.random() < glyphChance;
+  return {
+    hx:x, hy:y, x:x, y:y,
+    size:size,
+    op:op,
+    depth:depth,
+    glyph: isGlyph ? GLYPHS[(Math.random()*GLYPHS.length)|0] : null,
+    // font bucket keeps the number of ctx.font changes small
+    bucket: isGlyph ? Math.max(0, Math.min(3, Math.round(size*1.9)-1)) : -1,
+    phase: Math.random()*6.283,
+    spin: (Math.random()-0.5)*0.4,
+    swapAt: performance.now() + 900 + Math.random()*5200
+  };
 }
 
 function buildCorners(){
@@ -1069,40 +1091,38 @@ function buildCorners(){
   const rays = 16, steps = 13;
   const R = reach * 0.62;
   for (let r=0;r<rays;r++){
-    const a = (Math.PI/2) * (r/(rays-1));      // 0 → 90°
-    const bend = Math.sin(a*2) * 0.16;          // gentle curve in the fan
+    const a = (Math.PI/2) * (r/(rays-1));
+    const bend = Math.sin(a*2) * 0.16;
     for (let k=1;k<=steps;k++){
       const t = k/steps;
-      const rad = R * t * t;                    // dots thin out as they travel
+      const rad = R * t * t;
       const ang = a + bend * t;
       const x = Math.cos(ang) * rad;
       const y = Math.sin(ang) * rad;
       if (x > CW*0.55 || y > CH*0.55) continue;
       const fade = 1 - t;
-      nodes.push(node(x, y, 0.9 + fade*1.9, 0.10 + fade*0.55, 0.3 + fade*1.1));
+      nodes.push(mark(x, y, 0.9 + fade*1.9, 0.10 + fade*0.55, 0.3 + fade*1.1, 0.34));
     }
   }
 
-  // ---- bottom band: rows of dots riding a shallow curve ----
+  // ---- bottom band: rows riding a shallow curve ----
   const cols = Math.max(26, Math.floor(CW/34));
   const rows = 7;
   for (let rw=0; rw<rows; rw++){
     const depth = rw/(rows-1);
     for (let c=0;c<cols;c++){
       const t = c/(cols-1);
-      // two crossing curves, like the artwork's flowing mesh
       const curve = Math.sin(t*Math.PI) * (28 + depth*54);
       const y = CH - 6 - depth*118 + curve*0.42;
       const x = t*CW + (rw%2 ? 14 : 0);
-      // densest at the two bottom corners, sparse in the middle
       const edge = Math.max(0, 1 - Math.abs(t-0.5)*1.85);
       const fade = (1-depth)*0.75 + (1-edge)*0.45;
       if (Math.random() > 0.30 + (1-edge)*0.62) continue;
-      nodes.push(node(x, y, 0.8 + fade*1.7, 0.08 + fade*0.42, 0.3 + fade*1.0));
+      nodes.push(mark(x, y, 0.8 + fade*1.7, 0.08 + fade*0.42, 0.3 + fade*1.0, 0.30));
     }
   }
 
-  // ---- top-right accent: a light echo of the corner fan ----
+  // ---- top-right accent ----
   const rays2 = 9, steps2 = 9;
   const R2 = reach*0.34;
   for (let r=0;r<rays2;r++){
@@ -1114,46 +1134,90 @@ function buildCorners(){
       const y = Math.sin(a)*rad;
       const fade = 1-t;
       if (Math.random() > 0.55) continue;
-      nodes.push(node(x, y, 0.7 + fade*1.2, 0.05 + fade*0.26, 0.3 + fade*0.9));
+      nodes.push(mark(x, y, 0.7 + fade*1.2, 0.05 + fade*0.26, 0.3 + fade*0.9, 0.26));
     }
   }
 }
 
+const FONT_PX = [9, 12, 15, 18];
+
 function drawCorners(boost){
   cx.clearRect(0,0,CW,CH);
 
-  const drift = vel * 0.55;          // scroll direction pushes the markings
+  const now  = performance.now();
+  const t    = now / 1000;
+  const drift = vel * 0.55;
   const N = nodes.length;
+
+  // scrolling speeds the wave up and widens its swing
+  const waveAmp  = 3 + boost * 13;
+  const waveRate = 1.05 + boost * 1.5;
+  // and makes the symbols rewrite themselves faster
+  const swapBase = 5200 - boost * 3600;
+
+  cx.textAlign = 'center';
+  cx.textBaseline = 'middle';
+
+  const glyphBuckets = [[],[],[],[]];
 
   for (let i=0;i<N;i++){
     const n = nodes[i];
 
-    // scroll drag, by depth — deeper dots lag further behind
-    let tx = n.hx;
-    let ty = n.hy - drift * n.depth * 1.5;
+    // --- the wave: one travelling crest across the whole field ---
+    const w  = Math.sin(t*waveRate - n.hx*0.0055 + n.hy*0.0038 + n.phase);
+    const w2 = Math.sin(t*0.62 + n.hx*0.0031 - n.hy*0.0069 + n.phase*0.5);
 
-    // pointer pushes the markings aside
+    let tx = n.hx + w2 * waveAmp * 0.55 * n.depth;
+    let ty = n.hy + w  * waveAmp * n.depth - drift * n.depth * 1.5;
+
+    // --- the pointer parts the field ---
     const dx = n.hx - mouse.x, dy = n.hy - mouse.y;
     const d2 = dx*dx + dy*dy;
+    let near = 0;
     if (d2 < 32400 && d2 > 0.01){
-      const d = Math.sqrt(d2), f = (180-d)/180;
-      tx += (dx/d) * f * 22;
-      ty += (dy/d) * f * 22;
+      const d = Math.sqrt(d2);
+      near = (180-d)/180;
+      tx += (dx/d) * near * 22;
+      ty += (dy/d) * near * 22;
     }
 
-    // easing back home — this is what makes it fluid rather than twitchy
+    // --- glide home; never snap ---
     n.x += (tx - n.x) * 0.10;
     n.y += (ty - n.y) * 0.10;
 
-    const op = Math.min(0.95, n.op * (1 + boost*1.1));
-    const sz = n.size * (1 + boost*0.4);
-    cx.beginPath();
-    cx.arc(n.x, n.y, sz, 0, 6.2832);
-    cx.fillStyle = 'rgba(37,214,102,' + op.toFixed(3) + ')';
-    cx.fill();
+    // --- contrast: the wave crest lights marks up, the trough sinks them ---
+    const lift = 0.34 + 0.66 * (0.5 + 0.5*w);
+    let op = n.op * lift * (1 + boost*1.25) + near*0.30;
+    if (op > 0.95) op = 0.95;
+
+    if (n.glyph){
+      // live data: symbols rewrite themselves, faster while scrolling
+      if (now > n.swapAt){
+        n.glyph  = GLYPHS[(Math.random()*GLYPHS.length)|0];
+        n.swapAt = now + 700 + Math.random()*swapBase;
+      }
+      glyphBuckets[n.bucket].push(n, op);
+    } else {
+      cx.beginPath();
+      cx.arc(n.x, n.y, n.size*(1 + boost*0.4), 0, 6.2832);
+      cx.fillStyle = 'rgba(37,214,102,' + op.toFixed(3) + ')';
+      cx.fill();
+    }
   }
 
-  // threads between neighbouring dots — they brighten as the page moves
+  // --- glyphs, batched per size so the font is set only four times ---
+  for (let b=0;b<4;b++){
+    const list = glyphBuckets[b];
+    if (!list.length) continue;
+    cx.font = '600 ' + (FONT_PX[b] * (1 + boost*0.10)).toFixed(1) + 'px ' + MONO;
+    for (let i=0;i<list.length;i+=2){
+      const n = list[i], op = list[i+1];
+      cx.fillStyle = 'rgba(37,214,102,' + op.toFixed(3) + ')';
+      cx.fillText(n.glyph, n.x, n.y);
+    }
+  }
+
+  // --- threads between neighbours, brightening as the page moves ---
   const maxD = 46 + boost*30, maxD2 = maxD*maxD;
   cx.lineWidth = 0.55;
   for (let i=0;i<N;i++){
@@ -1162,7 +1226,7 @@ function drawCorners(boost){
       const b = nodes[j];
       const dx = a.x-b.x, dy = a.y-b.y, d2 = dx*dx+dy*dy;
       if (d2 < maxD2){
-        const al = 0.16*(1 - Math.sqrt(d2)/maxD)*(0.55 + boost*1.6);
+        const al = 0.15*(1 - Math.sqrt(d2)/maxD)*(0.5 + boost*1.7);
         cx.beginPath();
         cx.moveTo(a.x,a.y); cx.lineTo(b.x,b.y);
         cx.strokeStyle = 'rgba(37,214,102,' + al.toFixed(4) + ')';
