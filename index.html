@@ -1051,22 +1051,25 @@ function chrome(){
 }
 
 /* =========================================================
-   DIGITAL CURRENT — a double helix of data, like a DNA strand.
+   DIGITAL CURRENT — a scattered stream of data.
 
-   Two strands wind around one another along a single path: in
-   off the right edge, right-to-left along the bottom, around
-   the outside of the left edge, up, through the top-left
-   corner and off the top.
+   The characters are randomly strewn through the stream: each
+   one sits at its own angle around the axis, at its own
+   distance from it, at its own point along the path. Nothing
+   is paired, nothing is arranged.
 
-   The twist is coherent — one shared rotation driven by
-   position along the path, the two strands exactly opposite
-   each other — so it reads as a helix, never as characters
-   tumbling on their own axis. Faint rungs tie the strands
-   together at intervals. Scrolling drives the whole strand.
+   What they share is the TWIST. The whole stream winds about
+   its own axis the way a strand of DNA does — slowly, and less
+   than a single turn across the entire journey, so no character
+   ever completes a revolution between entering and leaving.
+
+   The path: in off the right edge, right-to-left along the
+   bottom, around the outside of the left edge, up, through the
+   top-left corner, out of the top. Scrolling drives it.
    ========================================================= */
 const cc = document.getElementById('cornerCanvas');
 const cx = cc.getContext('2d');
-let CW=0, CH=0, spine=[], pairs=[], pathLen=0, twists=1;
+let CW=0, CH=0, spine=[], motes=[], pathLen=0, twists=1;
 
 const TAU = 6.28318;
 
@@ -1151,16 +1154,17 @@ let flowU = 0;
 
 function buildCorners(){
   buildSpine();
-  pairs = [];
-  // one base pair every ~15px of path
-  const n = Math.max(60, Math.round(pathLen/15));
+  motes = [];
+  const n = Math.max(90, Math.round(pathLen/9));
   for (let i=0;i<n;i++){
-    pairs.push({
-      u0: i/n,
-      a: GLYPHS[(Math.random()*GLYPHS.length)|0],
-      b: GLYPHS[(Math.random()*GLYPHS.length)|0],
-      swapAt: performance.now() + Math.random()*2600,
-      rung: (i % 2) === 0
+    motes.push({
+      u0:     Math.random(),                 // anywhere along the stream
+      phase:  Math.random()*TAU,             // its own fixed angle about the axis
+      rf:     0.20 + Math.random()*0.95,     // its own distance from the axis
+      drift:  (Math.random()-0.5)*0.55,      // a little slack along the path
+      sz:     Math.random(),                 // its own size class
+      ch:     GLYPHS[(Math.random()*GLYPHS.length)|0],
+      swapAt: performance.now() + Math.random()*3200
     });
   }
 }
@@ -1172,84 +1176,58 @@ function drawCorners(boost){
   cx.clearRect(0,0,CW,CH);
 
   const now = performance.now();
-  const t = now/1000;
 
-  // the strand travels; scrolling drives it
+  // the stream travels; scrolling drives it
   flowU += 0.00016 + vel*0.00042;
   if (flowU > 1) flowU -= 1; else if (flowU < 0) flowU += 1;
 
-  const spin = 0;                           // no self-rotation; the twist is purely positional
   const mid = CW/2, half = Math.min(470, CW*0.44);
 
   cx.textAlign = 'center';
   cx.textBaseline = 'middle';
 
-  const back = [[],[],[]];    // strand behind
-  const front = [[],[],[]];   // strand in front
-  const rungs = [];
+  const back = [[],[],[]];
+  const front = [[],[],[]];
 
-  for (let i=0;i<pairs.length;i++){
-    const pr = pairs[i];
-    const u = pr.u0 + flowU;
+  for (let i=0;i<motes.length;i++){
+    const m = motes[i];
+    const u = m.u0 + flowU*(1 + m.drift*0.12);
     const p = onSpine(u);
 
-    // ribbon radius: wider along the open bottom run, tighter at the corner
-    const R = 26 + 30*Math.sin(p.u*Math.PI);
+    // how far the stream spreads: wider on the open bottom run
+    const R = (16 + 30*Math.sin(p.u*Math.PI)) * m.rf;
 
-    // ONE shared rotation — this is what makes it a helix and not a tumble
-    const th = p.u*TAU*twists + spin;
+    // ONE shared twist, set purely by position along the path, plus each
+    // character's own fixed angle. Under a full turn end to end, and nothing
+    // rotates on its own.
+    const th = p.u*TAU*twists + m.phase;
 
-    // Keep clear of the reading column — but the top and bottom margins are
-    // the strand's own territory, so it is allowed to read properly there.
-    const fadeAt = (x, y) => {
-      const d = Math.abs(x - mid);
-      const c = d < half ? d/half : 1;
-      const col = 0.05 + 0.95*c*c;
-      const band = Math.min(1, Math.max(0, (Math.abs(y - CH*0.5)/(CH*0.5) - 0.60)/0.40));
-      return Math.max(col, band*0.80);
-    };
+    const off = Math.cos(th)*R;
+    const dep = Math.sin(th);                    // +1 nearest … -1 furthest
+    const nearF = 0.5 + 0.5*dep;
 
-    // the two strands, exactly opposite
-    const ends = [];
-    for (let k=0;k<2;k++){
-      const ph = th + k*Math.PI;
-      const off = Math.cos(ph)*R;
-      const dep = Math.sin(ph);                  // +1 nearest … -1 furthest
-      const x = p.x + p.nx*off;
-      const y = p.y + p.ny*off;
-      const nearF = 0.5 + 0.5*dep;
+    const x = p.x + p.nx*off;
+    const y = p.y + p.ny*off;
 
-      let op = (0.07 + 0.34*nearF) * (0.72 + boost*0.55) * fadeAt(x, y);
-      // ease the strand away at the very ends of the path
-      op *= Math.min(1, Math.min(p.u, 1-p.u)*14);
+    if (x < -40 || x > CW+40 || y < -40 || y > CH+40) continue;
 
-      ends.push({x, y, op, dep, nearF, ch: k ? pr.b : pr.a});
-    }
+    // clear of the reading column; the top and bottom margins are its own
+    const d = Math.abs(x - mid);
+    const c = d < half ? d/half : 1;
+    const col = 0.05 + 0.95*c*c;
+    const band = Math.min(1, Math.max(0, (Math.abs(y - CH*0.5)/(CH*0.5) - 0.60)/0.40));
+    const fade = Math.max(col, band*0.80);
 
-    if (pr.rung){
-      const o = Math.min(ends[0].op, ends[1].op) * 1.05;
-      if (o > 0.012) rungs.push(ends[0].x, ends[0].y, ends[1].x, ends[1].y, o);
-    }
+    let op = (0.07 + 0.32*nearF) * (0.72 + boost*0.55) * fade;
+    op *= Math.min(1, Math.min(p.u, 1-p.u)*14);     // ease in and out at the ends
 
-    for (const e of ends){
-      if (e.op < 0.012) continue;
-      if (e.op > 0.46) e.op = 0.46;
-      const cls = e.nearF > 0.72 ? 2 : e.nearF > 0.34 ? 1 : 0;
-      (e.dep >= 0 ? front : back)[cls].push(e.x, e.y, e.op, e.ch);
-    }
+    if (op < 0.012) continue;
+    if (op > 0.44) op = 0.44;
+
+    const cls = m.sz > 0.72 ? 2 : m.sz > 0.34 ? 1 : 0;
+    (dep >= 0 ? front : back)[cls].push(x, y, op, m.ch);
   }
 
-  // rungs first, underneath everything
-  cx.lineWidth = 0.75;
-  for (let i=0;i<rungs.length;i+=5){
-    cx.beginPath();
-    cx.moveTo(rungs[i], rungs[i+1]);
-    cx.lineTo(rungs[i+2], rungs[i+3]);
-    cx.strokeStyle = 'rgba(37,214,102,' + rungs[i+4].toFixed(3) + ')';
-    cx.stroke();
-  }
-
-  // far strand, then near strand
   for (const group of [back, front]){
     for (let l=0;l<3;l++){
       const L = group[l];
@@ -1262,14 +1240,13 @@ function drawCorners(boost){
     }
   }
 
-  // the characters rewrite themselves, faster while the page moves
-  const budget = 3 + (boost*10|0);
+  // characters rewrite themselves, faster while the page moves
+  const budget = 4 + (boost*12|0);
   for (let k=0;k<budget;k++){
-    const pr = pairs[(Math.random()*pairs.length)|0];
-    if (now > pr.swapAt){
-      if (Math.random() < 0.5) pr.a = GLYPHS[(Math.random()*GLYPHS.length)|0];
-      else                     pr.b = GLYPHS[(Math.random()*GLYPHS.length)|0];
-      pr.swapAt = now + 300 + Math.random()*(2600 - boost*1800);
+    const m = motes[(Math.random()*motes.length)|0];
+    if (now > m.swapAt){
+      m.ch = GLYPHS[(Math.random()*GLYPHS.length)|0];
+      m.swapAt = now + 300 + Math.random()*(3000 - boost*2100);
     }
   }
 }
