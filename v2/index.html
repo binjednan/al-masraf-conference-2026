@@ -1063,9 +1063,9 @@ function chrome(){
    than a single turn across the entire journey, so no character
    ever completes a revolution between entering and leaving.
 
-   The path: in off the right edge, right-to-left along the
-   bottom, around the outside of the left edge, up, through the
-   top-left corner, out of the top. Scrolling drives it.
+   The path: in off the top, down through the top-left corner,
+   around the outside of the left edge, then left-to-right along
+   the bottom and out past the right edge. Scrolling drives it.
    ========================================================= */
 const cc = document.getElementById('cornerCanvas');
 const cx = cc.getContext('2d');
@@ -1191,8 +1191,10 @@ function drawCorners(boost){
 
   const now = performance.now();
 
-  // the stream travels; scrolling drives it
-  flowU += 0.00016 + vel*0.00042;
+  // the stream travels — running the path in reverse: in off the top, down
+  // through the top-left corner, around the outside of the left edge, then
+  // left-to-right along the bottom and out past the right edge
+  flowU -= 0.00016 + vel*0.00042;
   if (flowU > 1) flowU -= 1; else if (flowU < 0) flowU += 1;
 
   const mid = CW/2, half = Math.min(470, CW*0.44);
