@@ -1128,8 +1128,9 @@ function buildSpine(){
   for (let i=0;i<pts.length;i++) pts[i].u = pts[i].s/total;
   spine = pts;
   pathLen = total;
-  // one full twist roughly every 230px of path — reads as a helix, not a drill
-  twists = Math.max(4, Math.round(total/200));
+  // under one full turn across the WHOLE path: the strands cross over
+  // twice on the journey and never complete a revolution
+  twists = 0.75;
 }
 
 function onSpine(u){
@@ -1177,7 +1178,7 @@ function drawCorners(boost){
   flowU += 0.00016 + vel*0.00042;
   if (flowU > 1) flowU -= 1; else if (flowU < 0) flowU += 1;
 
-  const spin = t*0.10;                      // the helix turns very slowly on its own
+  const spin = 0;                           // no self-rotation; the twist is purely positional
   const mid = CW/2, half = Math.min(470, CW*0.44);
 
   cx.textAlign = 'center';
@@ -1193,16 +1194,19 @@ function drawCorners(boost){
     const p = onSpine(u);
 
     // ribbon radius: wider along the open bottom run, tighter at the corner
-    const R = 15 + 17*Math.sin(p.u*Math.PI);
+    const R = 26 + 30*Math.sin(p.u*Math.PI);
 
     // ONE shared rotation — this is what makes it a helix and not a tumble
     const th = p.u*TAU*twists + spin;
 
-    // fade the whole strand out where the reading column is
-    const fadeAt = (x) => {
+    // Keep clear of the reading column — but the top and bottom margins are
+    // the strand's own territory, so it is allowed to read properly there.
+    const fadeAt = (x, y) => {
       const d = Math.abs(x - mid);
       const c = d < half ? d/half : 1;
-      return 0.05 + 0.95*c*c;
+      const col = 0.05 + 0.95*c*c;
+      const band = Math.min(1, Math.max(0, (Math.abs(y - CH*0.5)/(CH*0.5) - 0.60)/0.40));
+      return Math.max(col, band*0.80);
     };
 
     // the two strands, exactly opposite
@@ -1215,7 +1219,7 @@ function drawCorners(boost){
       const y = p.y + p.ny*off;
       const nearF = 0.5 + 0.5*dep;
 
-      let op = (0.07 + 0.34*nearF) * (0.72 + boost*0.55) * fadeAt(x);
+      let op = (0.07 + 0.34*nearF) * (0.72 + boost*0.55) * fadeAt(x, y);
       // ease the strand away at the very ends of the path
       op *= Math.min(1, Math.min(p.u, 1-p.u)*14);
 
@@ -1223,7 +1227,7 @@ function drawCorners(boost){
     }
 
     if (pr.rung){
-      const o = Math.min(ends[0].op, ends[1].op) * 0.75;
+      const o = Math.min(ends[0].op, ends[1].op) * 1.05;
       if (o > 0.012) rungs.push(ends[0].x, ends[0].y, ends[1].x, ends[1].y, o);
     }
 
@@ -1236,7 +1240,7 @@ function drawCorners(boost){
   }
 
   // rungs first, underneath everything
-  cx.lineWidth = 0.6;
+  cx.lineWidth = 0.75;
   for (let i=0;i<rungs.length;i+=5){
     cx.beginPath();
     cx.moveTo(rungs[i], rungs[i+1]);
