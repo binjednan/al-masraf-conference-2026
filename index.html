@@ -155,7 +155,14 @@ body{
 .meta-chip:hover{border-color:var(--border-hover);background:var(--accent-dim);transform:translateY(-3px);}
 .meta-chip svg{width:18px;height:18px;fill:var(--accent);flex-shrink:0;}
 
+.cd-status{
+  font-size:.82rem;font-weight:600;letter-spacing:.5px;color:var(--text-muted);
+  margin-bottom:14px;opacity:0;transform:translateY(15px);
+  transition:color .6s;
+}
+.cd-status.elapsed{color:var(--gold);}
 .countdown{display:flex;gap:16px;justify-content:center;margin-bottom:44px;opacity:0;transform:translateY(15px);}
+.countdown.elapsed .cd-num{color:var(--gold);}
 .cd-unit{display:flex;flex-direction:column;align-items:center;min-width:72px;}
 .cd-num{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:var(--accent-light);line-height:1;font-variant-numeric:tabular-nums;transition:transform .3s;}
 .cd-label{font-size:.72rem;color:var(--text-muted);font-weight:500;letter-spacing:1.5px;margin-top:6px;}
@@ -332,19 +339,16 @@ body{
 .topic-row span:not(.topic-idx){color:var(--text-secondary);font-size:.9rem;line-height:1.8;}
 
 .speaker-card{
-  display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:var(--radius);
+  display:flex;align-items:center;gap:16px;padding:18px 22px;border-radius:var(--radius);
   background:var(--glass);border:1px solid rgba(255,255,255,.04);
+  border-right:3px solid rgba(29,185,84,.35);
   transition:background .4s,border-color .4s,box-shadow .4s;
 }
+[dir="ltr"] .speaker-card{border-right:1px solid rgba(255,255,255,.04);border-left:3px solid rgba(29,185,84,.35);}
 .speaker-card:hover{background:var(--accent-dim);border-color:rgba(29,185,84,.15);box-shadow:0 6px 20px rgba(0,0,0,.15);}
-.speaker-card.chair{border-color:var(--gold-dim);background:rgba(201,168,76,.04);}
-.speaker-card.chair:hover{border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.08);}
-.sp-avatar{
-  flex-shrink:0;width:48px;height:48px;border-radius:14px;
-  display:flex;align-items:center;justify-content:center;font-size:.86rem;font-weight:700;
-  color:var(--accent);background:linear-gradient(135deg,var(--accent-dim),rgba(29,185,84,.06));letter-spacing:1px;
-}
-.speaker-card.chair .sp-avatar{color:var(--gold);background:linear-gradient(135deg,var(--gold-dim),rgba(201,168,76,.06));}
+.speaker-card.chair{background:rgba(201,168,76,.04);border-right-color:var(--gold);}
+[dir="ltr"] .speaker-card.chair{border-left-color:var(--gold);}
+.speaker-card.chair:hover{background:rgba(201,168,76,.08);}
 .sp-info{flex:1;min-width:0;}
 .sp-name{font-size:.88rem;font-weight:700;color:var(--text-primary);margin-bottom:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .chair-badge{font-size:.65rem;font-weight:700;color:var(--gold);background:var(--gold-dim);padding:2px 8px;border-radius:4px;white-space:nowrap;}
@@ -496,6 +500,8 @@ body{
         <span dir="ltr">8:00 AM – 1:30 PM</span>
       </span>
     </div>
+
+    <div class="cd-status" id="cdStatus" data-ar="يتبقى على انطلاق المؤتمر" data-en="Until the conference begins">يتبقى على انطلاق المؤتمر</div>
 
     <div class="countdown" id="countdown">
       <div class="cd-unit"><span class="cd-num" id="cdDays">--</span><span class="cd-label" data-ar="يوم" data-en="Days">يوم</span></div>
@@ -711,9 +717,9 @@ body{
       </div>
       <div class="speakers-label fx" data-ar="المتحدثين" data-en="Speakers:">المتحدثين</div>
       <div class="speakers-grid">
-        <div class="speaker-card chair fx"><div class="sp-avatar">ج.ش</div><div class="sp-info"><div class="sp-name" data-ar="فضيلة الأستاذ الدكتور جاسم الشامسي" data-en="Sheikh Prof. Dr. Jassim Al Shamsi">فضيلة الأستاذ الدكتور جاسم الشامسي</div><div class="sp-role" data-ar="عضو الهيئة العليا الشرعية بمصرف الإمارات المركزي" data-en="Member, Higher Shari'ah Authority, Central Bank of the UAE">عضو الهيئة العليا الشرعية بمصرف الإمارات المركزي</div></div><span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div>
-        <div class="speaker-card fx"><div class="sp-avatar">ع.ص</div><div class="sp-info"><div class="sp-name" data-ar="سعادة عبد الله أحمد آل صالح" data-en="H.E. Abdulla Ahmed Al Saleh">سعادة عبد الله أحمد آل صالح</div><div class="sp-role" data-ar="وكيل وزارة الاقتصاد والسياحة" data-en="Undersecretary, Ministry of Economy and Tourism">وكيل وزارة الاقتصاد والسياحة</div></div></div>
-        <div class="speaker-card fx"><div class="sp-avatar">أ.ك</div><div class="sp-info"><div class="sp-name" data-ar="فضيلة الدكتور أسيد الكيلاني" data-en="Sheikh Dr. Osaid Kailani">فضيلة الدكتور أسيد الكيلاني</div><div class="sp-role" data-ar="رئيس قطاع الشؤون الشرعية الدولي في مصرف أبو ظبي الإسلامي وعضو الهيئة العليا الشرعية بمصرف الإمارات المركزي" data-en="Head of International Shari'ah Affairs, Abu Dhabi Islamic Bank; Member, Higher Shari'ah Authority, Central Bank of the UAE">رئيس قطاع الشؤون الشرعية الدولي في مصرف أبو ظبي الإسلامي وعضو الهيئة العليا الشرعية بمصرف الإمارات المركزي</div></div></div>
+        <div class="speaker-card chair fx"><div class="sp-info"><div class="sp-name" data-ar="فضيلة الأستاذ الدكتور جاسم الشامسي" data-en="Sheikh Prof. Dr. Jassim Al Shamsi">فضيلة الأستاذ الدكتور جاسم الشامسي</div><div class="sp-role" data-ar="عضو الهيئة العليا الشرعية بمصرف الإمارات المركزي" data-en="Member, Higher Shari'ah Authority, Central Bank of the UAE">عضو الهيئة العليا الشرعية بمصرف الإمارات المركزي</div></div><span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="سعادة عبد الله أحمد آل صالح" data-en="H.E. Abdulla Ahmed Al Saleh">سعادة عبد الله أحمد آل صالح</div><div class="sp-role" data-ar="وكيل وزارة الاقتصاد والسياحة" data-en="Undersecretary, Ministry of Economy and Tourism">وكيل وزارة الاقتصاد والسياحة</div></div></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="فضيلة الدكتور أسيد الكيلاني" data-en="Sheikh Dr. Osaid Kailani">فضيلة الدكتور أسيد الكيلاني</div><div class="sp-role" data-ar="رئيس قطاع الشؤون الشرعية الدولي في مصرف أبو ظبي الإسلامي وعضو الهيئة العليا الشرعية بمصرف الإمارات المركزي" data-en="Head of International Shari'ah Affairs, Abu Dhabi Islamic Bank; Member, Higher Shari'ah Authority, Central Bank of the UAE">رئيس قطاع الشؤون الشرعية الدولي في مصرف أبو ظبي الإسلامي وعضو الهيئة العليا الشرعية بمصرف الإمارات المركزي</div></div></div>
       </div>
     </div>
 
@@ -733,10 +739,10 @@ body{
       </div>
       <div class="speakers-label fx" data-ar="المتحدثين" data-en="Speakers:">المتحدثين</div>
       <div class="speakers-grid">
-        <div class="speaker-card chair fx"><div class="sp-avatar">ع.ل</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ علي لوتاه" data-en="Mr. Ali Lootah">الأستاذ علي لوتاه</div><div class="sp-role" data-ar="رئيس النافذة الإسلامية في بنك الإمارات دبي الوطني" data-en="Head of Islamic Banking Window, Emirates NBD">رئيس النافذة الإسلامية في بنك الإمارات دبي الوطني</div></div><span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div>
-        <div class="speaker-card fx"><div class="sp-avatar">أ.ح</div><div class="sp-info"><div class="sp-name" data-ar="فضيلة الدكتور أحمد الحداد" data-en="His Eminence Sheikh Dr. Ahmad bin Abdulaziz Al Haddad">فضيلة الدكتور أحمد الحداد</div><div class="sp-role" data-ar="رئيس الهيئة العليا الشرعية بمصرف الإمارات المركزي وعضو مجلس الإمارات للإفتاء الشرعي" data-en="Chairman, Higher Shari'ah Authority, Central Bank of the UAE; Member, UAE Council for Fatwa">رئيس الهيئة العليا الشرعية بمصرف الإمارات المركزي وعضو مجلس الإمارات للإفتاء الشرعي</div></div></div>
-        <div class="speaker-card fx"><div class="sp-avatar">ف.م</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ فؤاد محمد" data-en="Mr. Fuad Mohamed">الأستاذ فؤاد محمد</div><div class="sp-role" data-ar="الرئيس التنفيذي للمصرف العربي للاستثمار والتجارة الخارجية" data-en="Chief Executive Officer, Arab Bank for Investment and Foreign Trade">الرئيس التنفيذي للمصرف العربي للاستثمار والتجارة الخارجية</div></div></div>
-        <div class="speaker-card fx"><div class="sp-avatar">ع.ع</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ علي محمد العابدين" data-en="Mr. Ali Al Abedin">الأستاذ علي محمد العابدين</div><div class="sp-role" data-ar="رئيس النافذة الإسلامية في بنك أبو ظبي الأول" data-en="Head of Islamic Banking, First Abu Dhabi Bank">رئيس النافذة الإسلامية في بنك أبو ظبي الأول</div></div></div>
+        <div class="speaker-card chair fx"><div class="sp-info"><div class="sp-name" data-ar="الأستاذ علي لوتاه" data-en="Mr. Ali Lootah">الأستاذ علي لوتاه</div><div class="sp-role" data-ar="رئيس النافذة الإسلامية في بنك الإمارات دبي الوطني" data-en="Head of Islamic Banking Window, Emirates NBD">رئيس النافذة الإسلامية في بنك الإمارات دبي الوطني</div></div><span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="فضيلة الدكتور أحمد الحداد" data-en="His Eminence Sheikh Dr. Ahmad bin Abdulaziz Al Haddad">فضيلة الدكتور أحمد الحداد</div><div class="sp-role" data-ar="رئيس الهيئة العليا الشرعية بمصرف الإمارات المركزي وعضو مجلس الإمارات للإفتاء الشرعي" data-en="Chairman, Higher Shari'ah Authority, Central Bank of the UAE; Member, UAE Council for Fatwa">رئيس الهيئة العليا الشرعية بمصرف الإمارات المركزي وعضو مجلس الإمارات للإفتاء الشرعي</div></div></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="الأستاذ فؤاد محمد" data-en="Mr. Fuad Mohamed">الأستاذ فؤاد محمد</div><div class="sp-role" data-ar="الرئيس التنفيذي للمصرف العربي للاستثمار والتجارة الخارجية" data-en="Chief Executive Officer, Arab Bank for Investment and Foreign Trade">الرئيس التنفيذي للمصرف العربي للاستثمار والتجارة الخارجية</div></div></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="الأستاذ علي محمد العابدين" data-en="Mr. Ali Al Abedin">الأستاذ علي محمد العابدين</div><div class="sp-role" data-ar="رئيس النافذة الإسلامية في بنك أبو ظبي الأول" data-en="Head of Islamic Banking, First Abu Dhabi Bank">رئيس النافذة الإسلامية في بنك أبو ظبي الأول</div></div></div>
       </div>
     </div>
 
@@ -756,10 +762,10 @@ body{
       </div>
       <div class="speakers-label fx" data-ar="المتحدثين" data-en="Speakers:">المتحدثين</div>
       <div class="speakers-grid">
-        <div class="speaker-card chair fx"><div class="sp-avatar">م.ع</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ مصطفى عادل" data-en="Mr. Mustafa Adil">الأستاذ مصطفى عادل</div><div class="sp-role" data-ar="رئيس التمويل الإسلامي في مجموعة بورصة لندن للأوراق المالية" data-en="Head of Islamic Finance, London Stock Exchange Group (LSEG)">رئيس التمويل الإسلامي في مجموعة بورصة لندن للأوراق المالية</div></div><span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div>
-        <div class="speaker-card fx"><div class="sp-avatar">م.د</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ محمد داوود" data-en="Mr. Mohammed Dawood">الأستاذ محمد داوود</div><div class="sp-role" data-ar="رئيس الصيرفة الإسلامية في الشرق الأوسط – HSBC" data-en="Head of Islamic Finance, Middle East, HSBC">رئيس الصيرفة الإسلامية في الشرق الأوسط – HSBC</div></div></div>
-        <div class="speaker-card fx"><div class="sp-avatar">س.ع</div><div class="sp-info"><div class="sp-name" data-ar="الدكتور سالم آل علي" data-en="Dr. Salim Al Ali">الدكتور سالم آل علي</div><div class="sp-role" data-ar="أستاذ مساعد، كلية القانون، جامعة الإمارات" data-en="Assistant Professor, College of Law, United Arab Emirates University">أستاذ مساعد، كلية القانون، جامعة الإمارات</div></div></div>
-        <div class="speaker-card fx"><div class="sp-avatar">ر.ش</div><div class="sp-info"><div class="sp-name" data-ar="الأستاذ رفيع الدين شيكو" data-en="Mr. Rafi Uddin Shikoh">الأستاذ رفيع الدين شيكو</div><div class="sp-role" data-ar="المؤسس والرئيس التنفيذي، شركة دينار ستاندرد" data-en="Founder and CEO, DinarStandard">المؤسس والرئيس التنفيذي، شركة دينار ستاندرد</div></div></div>
+        <div class="speaker-card chair fx"><div class="sp-info"><div class="sp-name" data-ar="الأستاذ مصطفى عادل" data-en="Mr. Mustafa Adil">الأستاذ مصطفى عادل</div><div class="sp-role" data-ar="رئيس التمويل الإسلامي في مجموعة بورصة لندن للأوراق المالية" data-en="Head of Islamic Finance, London Stock Exchange Group (LSEG)">رئيس التمويل الإسلامي في مجموعة بورصة لندن للأوراق المالية</div></div><span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="الأستاذ محمد داوود" data-en="Mr. Mohammed Dawood">الأستاذ محمد داوود</div><div class="sp-role" data-ar="رئيس الصيرفة الإسلامية في الشرق الأوسط – HSBC" data-en="Head of Islamic Finance, Middle East, HSBC">رئيس الصيرفة الإسلامية في الشرق الأوسط – HSBC</div></div></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="الدكتور سالم آل علي" data-en="Dr. Salim Al Ali">الدكتور سالم آل علي</div><div class="sp-role" data-ar="أستاذ مساعد، كلية القانون، جامعة الإمارات" data-en="Assistant Professor, College of Law, United Arab Emirates University">أستاذ مساعد، كلية القانون، جامعة الإمارات</div></div></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="الأستاذ رفيع الدين شيكو" data-en="Mr. Rafi Uddin Shikoh">الأستاذ رفيع الدين شيكو</div><div class="sp-role" data-ar="المؤسس والرئيس التنفيذي، شركة دينار ستاندرد" data-en="Founder and CEO, DinarStandard">المؤسس والرئيس التنفيذي، شركة دينار ستاندرد</div></div></div>
       </div>
     </div>
 
@@ -778,10 +784,10 @@ body{
       </div>
       <div class="speakers-label fx" data-ar="المتحدثين" data-en="Speakers:">المتحدثين</div>
       <div class="speakers-grid">
-        <div class="speaker-card chair fx"><div class="sp-avatar">س.ن</div><div class="sp-info"><div class="sp-name" data-ar="الدكتورة سامية النهدي" data-en="Dr. Samya Al Nahdi">الدكتورة سامية النهدي</div><div class="sp-role" data-ar="رئيس إدارة الرقابة الشرعية الداخلية في المصرف" data-en="Head of Internal Shari'ah Control Department, Al Masraf">رئيس إدارة الرقابة الشرعية الداخلية في المصرف</div></div><span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div>
-        <div class="speaker-card fx"><div class="sp-avatar">م.ب</div><div class="sp-info"><div class="sp-name" data-ar="الدكتور محمد البلوشي" data-en="Dr. Mohamed Al Blooshi">الدكتور محمد البلوشي</div><div class="sp-role" data-ar="المدير التنفيذي للأوقاف والزكاة" data-en="Executive Director for Awqaf and Zakat">المدير التنفيذي للأوقاف والزكاة</div></div></div>
-        <div class="speaker-card fx"><div class="sp-avatar">م.ق</div><div class="sp-info"><div class="sp-name" data-ar="الدكتورة مارية القاسم" data-en="H.E Dr. Maria Al Qassim">الدكتورة مارية القاسم</div><div class="sp-role" data-ar="الوكيل المساعد لقطاع السياسات والدراسات الاقتصادية بوزارة الاقتصاد والسياحة." data-en="Assistant Undersecretary, Policies and Economic Studies Sector, Ministry of Economy and Tourism">الوكيل المساعد لقطاع السياسات والدراسات الاقتصادية بوزارة الاقتصاد والسياحة.</div></div></div>
-        <div class="speaker-card fx"><div class="sp-avatar">ف.ر</div><div class="sp-info"><div class="sp-name" data-ar="الدكتور فضل رحيم" data-en="Dr. Fazal Rahim">الدكتور فضل رحيم</div><div class="sp-role" data-ar="رئيس إدارة الرقابة الشرعية الداخلية بمصرف عجمان" data-en="Head of Internal Shari'ah Control Department, Ajman Bank">رئيس إدارة الرقابة الشرعية الداخلية بمصرف عجمان</div></div></div>
+        <div class="speaker-card chair fx"><div class="sp-info"><div class="sp-name" data-ar="الدكتورة سامية النهدي" data-en="Dr. Samya Al Nahdi">الدكتورة سامية النهدي</div><div class="sp-role" data-ar="رئيس إدارة الرقابة الشرعية الداخلية في المصرف" data-en="Head of Internal Shari'ah Control Department, Al Masraf">رئيس إدارة الرقابة الشرعية الداخلية في المصرف</div></div><span class="chair-badge" data-ar="رئيس الجلسة" data-en="Chair">رئيس الجلسة</span></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="الدكتور محمد البلوشي" data-en="Dr. Mohamed Al Blooshi">الدكتور محمد البلوشي</div><div class="sp-role" data-ar="المدير التنفيذي للأوقاف والزكاة" data-en="Executive Director for Awqaf and Zakat">المدير التنفيذي للأوقاف والزكاة</div></div></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="الدكتورة مارية القاسم" data-en="H.E Dr. Maria Al Qassim">الدكتورة مارية القاسم</div><div class="sp-role" data-ar="الوكيل المساعد لقطاع السياسات والدراسات الاقتصادية بوزارة الاقتصاد والسياحة." data-en="Assistant Undersecretary, Policies and Economic Studies Sector, Ministry of Economy and Tourism">الوكيل المساعد لقطاع السياسات والدراسات الاقتصادية بوزارة الاقتصاد والسياحة.</div></div></div>
+        <div class="speaker-card fx"><div class="sp-info"><div class="sp-name" data-ar="الدكتور فضل رحيم" data-en="Dr. Fazal Rahim">الدكتور فضل رحيم</div><div class="sp-role" data-ar="رئيس إدارة الرقابة الشرعية الداخلية بمصرف عجمان" data-en="Head of Internal Shari'ah Control Department, Ajman Bank">رئيس إدارة الرقابة الشرعية الداخلية بمصرف عجمان</div></div></div>
       </div>
     </div>
   </section>
@@ -885,10 +891,33 @@ function toggleLang(){ applyLang(lang === 'ar' ? 'en' : 'ar'); }
 
 /* ================= COUNTDOWN ================= */
 const confDate = new Date('2026-09-30T08:00:00+04:00').getTime();
+
+// Counts DOWN to the start, then reverses and counts UP — the conference's
+// own running time — instead of disappearing.
+let elapsedMode = false;
+
 function updateCountdown(){
-  const diff = confDate - Date.now();
+  const now = Date.now();
+  const past = now >= confDate;
+  const diff = past ? (now - confDate) : (confDate - now);
+
   const cd = document.getElementById('countdown');
-  if (diff <= 0){ cd.style.display = 'none'; return; }
+  const st = document.getElementById('cdStatus');
+
+  if (past !== elapsedMode){
+    elapsedMode = past;
+    cd.classList.toggle('elapsed', past);
+    st.classList.toggle('elapsed', past);
+    if (past){
+      st.dataset.ar = 'مضى على انطلاق المؤتمر';
+      st.dataset.en = 'Since the conference began';
+    } else {
+      st.dataset.ar = 'يتبقى على انطلاق المؤتمر';
+      st.dataset.en = 'Until the conference begins';
+    }
+    st.innerHTML = st.dataset[lang] || st.dataset.ar;
+  }
+
   const d = Math.floor(diff/86400000);
   const h = Math.floor((diff%86400000)/3600000);
   const m = Math.floor((diff%3600000)/60000);
@@ -1148,7 +1177,7 @@ window.addEventListener('resize', () => {
 
 /* ================= HERO ================= */
 function animateHero(){
-  ['.hero-logos','.hero-badge','.hero-org','.hero-title','.hero-slogan-label','.hero-subtitle','.hero-meta','.countdown','.hero-scroll']
+  ['.hero-logos','.hero-badge','.hero-org','.hero-title','.hero-slogan-label','.hero-subtitle','.hero-meta','.cd-status','.countdown','.hero-scroll']
   .forEach((sel,i) => {
     const el = document.querySelector(sel);
     if (!el) return;
