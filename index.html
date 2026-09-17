@@ -1051,30 +1051,36 @@ function chrome(){
 }
 
 /* =========================================================
-   DIGITAL CURRENT — the only reactive part of the background.
-   The artwork underneath never moves.
+   DIGITAL CURRENT — one continuous ribbon of data.
 
-   Symbols do not sit still and shiver. They RUN along flowing
-   channels: fans out of the corners, bands across the bottom,
-   and two columns hugging the far edges. Scrolling drives the
-   current — down carries it one way, up the other. Each
-   channel sits at its own depth, so the near ones run large,
-   bright and fast while the far ones drift small and faint,
-   which is what gives the sense of falling into a digital
-   space. Everything is held to the margins and dimmed hard
-   across the reading column, so it never competes with the
-   content.
+   It enters off the right edge along the bottom of the screen,
+   runs right-to-left, wraps around the OUTSIDE of the left edge,
+   climbs, re-enters below the top-left corner, passes through
+   that corner and leaves off the top.
+
+   The ribbon is a helix: every character rides a rotation about
+   the spine, so it swings to the front (bright, larger) and
+   behind (dim, smaller) as it travels — which is what reads as
+   a spiral rather than a flat line.
+
+   The characters are small and precise, falling in short trains
+   with a bright head and a fading tail, Matrix-style. Scrolling
+   drives the whole current.
    ========================================================= */
 const cc = document.getElementById('cornerCanvas');
 const cx = cc.getContext('2d');
-let CW=0, CH=0, streams=[], flow=[];
+let CW=0, CH=0, spine=[], trains=[];
 
-const GLYPHS = ['0','1','0','1','0','1','٠','١','1','0',
-                '<','>','/','{','}','[',']','+','=',':',
-                'A','F','E','C','D','B','x','7','2','9'];
-
-const MONO = '"IBM Plex Sans Arabic", ui-monospace, "SF Mono", Menlo, monospace';
 const TAU = 6.28318;
+
+// digits and code symbols, plus half-width katakana for the Matrix cadence
+const GLYPHS = (
+  '0123456789' + '0101010101' +
+  'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ' +
+  'ABCDEF' + '<>/{}[]+=:*#$%'
+).split('');
+
+const MONO = 'ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "Liberation Mono", monospace';
 
 function sizeCorners(){
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1084,173 +1090,174 @@ function sizeCorners(){
   cx.setTransform(dpr,0,0,dpr,0,0);
 }
 
-/* ---- channel shapes. each returns a point and a unit normal ---- */
-function ray(ox, oy, sx, sy, ang, len, bend){
-  return {
-    at(t){
-      const r = len * Math.pow(t, 1.55);
-      const a = ang + bend*t;
-      return { x: ox + sx*Math.cos(a)*r, y: oy + sy*Math.sin(a)*r,
-               nx: -sy*Math.sin(a),      ny:  sx*Math.cos(a) };
+/* ---- the spine, sampled once per resize ---- */
+function buildSpine(){
+  // control points: bottom right → bottom left → around the outside of the
+  // left edge → up → through the top-left corner → off the top
+  const P = [
+    [CW+140, CH-46],
+    [CW*0.74, CH-34],
+    [CW*0.44, CH-44],
+    [CW*0.18, CH-64],
+    [CW*0.02, CH-108],
+    [-34,     CH*0.74],
+    [-42,     CH*0.46],
+    [-30,     CH*0.24],
+    [ 26,     CH*0.11],
+    [ 74,     CH*0.02],
+    [ 96,     -120]
+  ];
+
+  // Catmull-Rom → dense polyline with arc-length parameters
+  const pts = [];
+  const seg = 26;
+  for (let i=0;i<P.length-1;i++){
+    const p0 = P[i>0?i-1:0], p1 = P[i], p2 = P[i+1], p3 = P[i+2<P.length?i+2:P.length-1];
+    for (let k=0;k<seg;k++){
+      const t = k/seg, t2=t*t, t3=t2*t;
+      const x = 0.5*((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3);
+      const y = 0.5*((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3);
+      pts.push({x,y});
     }
-  };
+  }
+  pts.push({x:P[P.length-1][0], y:P[P.length-1][1]});
+
+  // tangents + normals + cumulative length
+  let total = 0;
+  for (let i=0;i<pts.length;i++){
+    const a = pts[Math.max(0,i-1)], b = pts[Math.min(pts.length-1,i+1)];
+    let dx = b.x-a.x, dy = b.y-a.y;
+    const m = Math.hypot(dx,dy) || 1;
+    dx/=m; dy/=m;
+    pts[i].nx = -dy; pts[i].ny = dx;
+    if (i>0) total += Math.hypot(pts[i].x-pts[i-1].x, pts[i].y-pts[i-1].y);
+    pts[i].s = total;
+  }
+  for (let i=0;i<pts.length;i++) pts[i].u = pts[i].s/total;
+  spine = pts;
 }
-function band(y0, curve, dirn){
+
+function onSpine(u){
+  if (u < 0) u += Math.ceil(-u);
+  u = u % 1;
+  const f = u*(spine.length-1);
+  const i = f|0;
+  const j = Math.min(spine.length-1, i+1);
+  const k = f-i;
+  const a = spine[i], b = spine[j];
   return {
-    at(t){
-      const u = dirn > 0 ? t : 1-t;
-      return { x: u*(CW+160) - 80, y: y0 + Math.sin(u*Math.PI)*curve, nx:0, ny:1 };
-    }
-  };
-}
-function edge(x0, lean){
-  return {
-    at(t){
-      return { x: x0 + Math.sin(t*Math.PI*1.6)*lean, y: t*(CH+180) - 90, nx:1, ny:0 };
-    }
+    x: a.x + (b.x-a.x)*k,
+    y: a.y + (b.y-a.y)*k,
+    nx: a.nx + (b.nx-a.nx)*k,
+    ny: a.ny + (b.ny-a.ny)*k,
+    u
   };
 }
 
 function buildCorners(){
-  streams = [];
-  flow = [];
-  const reach = Math.min(CW, CH);
-
-  // depth 0 = nearest (big, bright, quick) … 1 = far away (small, faint, slow)
-  function addStream(path, depth, count, amp, freq, speed){
-    const id = streams.length;
-    streams.push({ path, depth, amp, freq, speed });
-    for (let i=0;i<count;i++){
-      flow.push({
-        s: id,
-        t: Math.random(),
-        phase: Math.random()*TAU,
-        jitter: 0.6 + Math.random()*0.8,
-        glyph: Math.random() < 0.46 ? GLYPHS[(Math.random()*GLYPHS.length)|0] : null,
-        swapAt: performance.now() + 700 + Math.random()*5200
-      });
-    }
+  buildSpine();
+  trains = [];
+  const N = Math.round(64 + CW/20);
+  for (let i=0;i<N;i++){
+    trains.push({
+      u: Math.random(),
+      len: 7 + (Math.random()*13|0),
+      gap: 0.0042 + Math.random()*0.0026,
+      speed: 0.00042 + Math.random()*0.00050,
+      lane: (Math.random()*2-1),            // -1..1 across the ribbon
+      turns: 2.2 + Math.random()*2.0,       // how tightly it spirals
+      phase: Math.random()*TAU,
+      chars: [],
+      swapAt: 0
+    });
   }
-
-  // ---- top-left fan: symbols stream outward from the corner ----
-  const rays = 11;
-  for (let r=0;r<rays;r++){
-    const a = (Math.PI/2) * (r/(rays-1));
-    const depth = 0.15 + (r/(rays-1))*0.55;
-    addStream(ray(-20,-20, 1,1, a, reach*0.78, Math.sin(a*2)*0.18),
-              depth, 7, 9, 2.2, 0.022 + (1-depth)*0.016);
+  for (const tr of trains){
+    for (let i=0;i<tr.len;i++) tr.chars.push(GLYPHS[(Math.random()*GLYPHS.length)|0]);
+    tr.swapAt = performance.now() + Math.random()*900;
   }
-
-  // ---- top-right echo, further back ----
-  const rays2 = 6;
-  for (let r=0;r<rays2;r++){
-    const a = (Math.PI/2)*(r/(rays2-1));
-    addStream(ray(CW+20,-20, -1,1, a, reach*0.46, 0),
-              0.62, 4, 6, 2.0, 0.016);
-  }
-
-  // ---- bottom bands: the current runs across, rows alternate ----
-  const rows = 6;
-  for (let rw=0; rw<rows; rw++){
-    const d = rw/(rows-1);
-    addStream(band(CH - 8 - d*128, 34 + d*46, rw%2 ? 1 : -1),
-              0.12 + d*0.62, 16, 7 + (1-d)*6, 2.6, 0.020 + (1-d)*0.018);
-  }
-
-  // ---- the two edge columns: this is the current that answers
-  //      most directly to scrolling up and down ----
-  const inset = Math.min(46, CW*0.05);
-  addStream(edge(inset,          16), 0.10, 20, 13, 1.5, 0.030);
-  addStream(edge(inset+34,       10), 0.42, 14,  9, 1.9, 0.022);
-  addStream(edge(CW-inset,      -16), 0.10, 20, 13, 1.5, 0.030);
-  addStream(edge(CW-inset-34,   -10), 0.42, 14,  9, 1.9, 0.022);
 }
 
-const FONT_PX = [17, 14, 11, 9];
-
 function drawCorners(boost){
+  if (!spine.length) return;
   cx.clearRect(0,0,CW,CH);
 
   const now = performance.now();
-  const t   = now/1000;
-
-  // the whole current idles forward, then scrolling drives it
-  const push = vel * 0.0022;
-  const swapBase = 5200 - boost*3600;
-
-  // the reading column the symbols must stay clear of
-  const mid  = CW/2;
-  const half = Math.min(470, CW*0.44);
+  const t = now/1000;
+  const push = vel * 0.00052;               // scrolling drives the current
+  const mid = CW/2, half = Math.min(470, CW*0.44);
 
   cx.textAlign = 'center';
   cx.textBaseline = 'middle';
 
-  const buckets = [[],[],[],[]];
-  const dots = [];
+  // three size classes keep the font switches down
+  const SZ = [8.5, 10.5, 12.5];
+  const layers = [[],[],[]];
 
-  for (let i=0;i<flow.length;i++){
-    const f = flow[i];
-    const st = streams[f.s];
-    const near = 1 - st.depth;                 // 1 = close to the viewer
+  for (let ti=0; ti<trains.length; ti++){
+    const tr = trains[ti];
 
-    // --- run along the channel ---
-    f.t += (st.speed*0.016*f.jitter) + push*(0.35 + near*1.25);
-    if (f.t >= 1) f.t -= Math.floor(f.t);
-    else if (f.t < 0) f.t += Math.ceil(-f.t) ;
+    tr.u += tr.speed + push;
+    if (tr.u > 1) tr.u -= 1; else if (tr.u < 0) tr.u += 1;
 
-    const pt = st.path.at(f.t);
+    // the characters rewrite themselves, faster while the page moves
+    if (now > tr.swapAt){
+      tr.chars[(Math.random()*tr.len)|0] = GLYPHS[(Math.random()*GLYPHS.length)|0];
+      tr.swapAt = now + 40 + Math.random()*(260 - boost*190);
+    }
 
-    // --- the wave the channel rides on ---
-    const w = Math.sin(f.t*TAU*st.freq + t*(0.7 + near*0.7) + f.phase);
-    const amp = st.amp * (1 + boost*0.9);
-    let x = pt.x + pt.nx*w*amp;
-    let y = pt.y + pt.ny*w*amp;
+    for (let i=0;i<tr.len;i++){
+      const u = tr.u - i*tr.gap;
+      const p = onSpine(u);
 
-    // --- depth: far channels are smaller and dimmer ---
-    const scale = 0.45 + near*0.75;
-    let op = (0.10 + near*0.34) * (0.42 + 0.58*(0.5+0.5*w)) * (1 + boost*0.85);
+      // ribbon width: broad along the bottom run, tightening toward the corner
+      const width = 15 + 16*Math.sin(p.u*Math.PI);
 
-    // --- stay out of the reading column ---
-    const dxc = Math.abs(x - mid);
-    let clear = dxc < half ? dxc/half : 1;
-    clear *= clear;
-    op *= 0.06 + 0.94*clear;
+      // --- the helix ---
+      const th = p.u*TAU*tr.turns + tr.phase + t*0.55;
+      const off = (tr.lane*0.55 + Math.cos(th)) * width;
+      const depth = Math.sin(th);                 // +1 front, -1 behind
 
-    // --- and fade out near the viewport's vertical middle band ---
-    const dyc = Math.abs(y - CH*0.5) / (CH*0.5);
-    op *= 0.30 + 0.70*Math.min(1, dyc*1.25);
+      const x = p.x + p.nx*off;
+      const y = p.y + p.ny*off;
 
-    if (op < 0.012) continue;
-    if (op > 0.78) op = 0.78;
+      if (x < -60 || x > CW+60 || y < -60 || y > CH+60) continue;
 
-    if (f.glyph){
-      if (now > f.swapAt){
-        f.glyph = GLYPHS[(Math.random()*GLYPHS.length)|0];
-        f.swapAt = now + 700 + Math.random()*swapBase;
-      }
-      const b = st.depth < 0.25 ? 0 : st.depth < 0.45 ? 1 : st.depth < 0.68 ? 2 : 3;
-      buckets[b].push(x, y, op, f.glyph);
-    } else {
-      dots.push(x, y, op, 0.7 + near*1.5);
+      const front = 0.5 + 0.5*depth;              // 0 behind … 1 in front
+      const head  = i === 0 ? 1 : 0;
+      const tail  = 1 - i/tr.len;                 // fades down the train
+
+      let op = (0.045 + 0.24*front) * (0.18 + 0.82*tail*tail) * (0.62 + boost*0.55);
+
+      // never crowd the reading column
+      const dxc = Math.abs(x - mid);
+      let clear = dxc < half ? dxc/half : 1;
+      op *= 0.05 + 0.95*clear*clear;
+
+      if (op < 0.012) continue;
+      if (op > 0.40) op = 0.40;
+
+      const cls = depth > 0.35 ? 2 : depth > -0.3 ? 1 : 0;
+      layers[cls].push(x, y, op, tr.chars[i], head);
     }
   }
 
-  // --- dots ---
-  for (let i=0;i<dots.length;i+=4){
-    cx.beginPath();
-    cx.arc(dots[i], dots[i+1], dots[i+3]*(1+boost*0.3), 0, TAU);
-    cx.fillStyle = 'rgba(37,214,102,' + dots[i+2].toFixed(3) + ')';
-    cx.fill();
-  }
-
-  // --- symbols, batched by depth so the font is set four times at most ---
-  for (let b=0;b<4;b++){
-    const L = buckets[b];
+  for (let l=0;l<3;l++){
+    const L = layers[l];
     if (!L.length) continue;
-    cx.font = '600 ' + (FONT_PX[b]*(1+boost*0.08)).toFixed(1) + 'px ' + MONO;
-    for (let i=0;i<L.length;i+=4){
-      cx.fillStyle = 'rgba(37,214,102,' + L[i+2].toFixed(3) + ')';
-      cx.fillText(L[i+3], L[i], L[i+1]);
+    cx.font = '500 ' + (SZ[l]*(1+boost*0.06)).toFixed(1) + 'px ' + MONO;
+    for (let i=0;i<L.length;i+=5){
+      const op = L[i+2];
+      if (L[i+4]){
+        // the leading character burns brighter, as the rain does
+        cx.shadowColor = 'rgba(80,255,150,0.45)';
+        cx.shadowBlur = 4;
+        cx.fillStyle = 'rgba(175,245,200,' + Math.min(0.52, op+0.15).toFixed(3) + ')';
+        cx.fillText(L[i+3], L[i], L[i+1]);
+        cx.shadowBlur = 0;
+      } else {
+        cx.fillStyle = 'rgba(37,214,102,' + op.toFixed(3) + ')';
+        cx.fillText(L[i+3], L[i], L[i+1]);
+      }
     }
   }
 }
