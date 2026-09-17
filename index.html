@@ -1090,46 +1090,67 @@ function sizeCorners(){
   cx.setTransform(dpr,0,0,dpr,0,0);
 }
 
-/* ---- the spine, sampled once per resize ---- */
+/* ---- the spine, sampled once per resize ----
+   Entry off the right edge → runs right-to-left along the bottom →
+   ONE loop → continues left → wraps outside the left edge → rises →
+   through the top-left corner → off the top. A single turn in the
+   whole journey; the characters never spin about themselves. */
 function buildSpine(){
-  // control points: bottom right → bottom left → around the outside of the
-  // left edge → up → through the top-left corner → off the top
-  const P = [
-    [CW+140, CH-46],
-    [CW*0.74, CH-34],
-    [CW*0.44, CH-44],
-    [CW*0.18, CH-64],
-    [CW*0.02, CH-108],
-    [-34,     CH*0.74],
-    [-42,     CH*0.46],
-    [-30,     CH*0.24],
-    [ 26,     CH*0.11],
-    [ 74,     CH*0.02],
-    [ 96,     -120]
-  ];
-
-  // Catmull-Rom → dense polyline with arc-length parameters
   const pts = [];
-  const seg = 26;
-  for (let i=0;i<P.length-1;i++){
-    const p0 = P[i>0?i-1:0], p1 = P[i], p2 = P[i+1], p3 = P[i+2<P.length?i+2:P.length-1];
-    for (let k=0;k<seg;k++){
-      const t = k/seg, t2=t*t, t3=t2*t;
-      const x = 0.5*((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3);
-      const y = 0.5*((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3);
-      pts.push({x,y});
+  const push = (x,y) => pts.push({x,y});
+
+  const baseY = CH - 46;
+
+  // --- A. the bottom run, right to left, with a soft swell ---
+  const ax0 = CW + 150, ax1 = CW*0.30;
+  for (let i=0;i<=70;i++){
+    const t = i/70;
+    const x = ax0 + (ax1-ax0)*t;
+    push(x, baseY - Math.sin(t*Math.PI)*16);
+  }
+
+  // --- B. the single loop ---
+  const R  = Math.min(64, CH*0.085);
+  const lx = CW*0.30 - R*0.15;
+  const ly = baseY - R;
+  for (let i=0;i<=72;i++){
+    const th = (Math.PI/2) + (i/72)*Math.PI*2;      // starts and ends tangent to the run
+    push(lx + Math.cos(th)*R, ly + Math.sin(th)*R);
+  }
+
+  // --- C. carry on left, then wrap outside the left edge ---
+  const C = [
+    [CW*0.30 - R*0.15, baseY],
+    [CW*0.16, baseY - 6],
+    [CW*0.05, baseY - 34],
+    [-16,     CH*0.80],
+    [-40,     CH*0.56],
+    [-34,     CH*0.34],
+    [ -2,     CH*0.19],
+    [ 42,     CH*0.085],
+    [ 82,     CH*0.015],
+    [104,     -130]
+  ];
+  for (let i=0;i<C.length-1;i++){
+    const p0=C[i>0?i-1:0], p1=C[i], p2=C[i+1], p3=C[i+2<C.length?i+2:C.length-1];
+    for (let k=0;k<24;k++){
+      const t=k/24, t2=t*t, t3=t2*t;
+      push(
+        0.5*((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+        0.5*((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)
+      );
     }
   }
-  pts.push({x:P[P.length-1][0], y:P[P.length-1][1]});
+  push(C[C.length-1][0], C[C.length-1][1]);
 
-  // tangents + normals + cumulative length
+  // tangents, normals, arc length
   let total = 0;
   for (let i=0;i<pts.length;i++){
     const a = pts[Math.max(0,i-1)], b = pts[Math.min(pts.length-1,i+1)];
-    let dx = b.x-a.x, dy = b.y-a.y;
+    let dx=b.x-a.x, dy=b.y-a.y;
     const m = Math.hypot(dx,dy) || 1;
     dx/=m; dy/=m;
-    pts[i].nx = -dy; pts[i].ny = dx;
+    pts[i].nx=-dy; pts[i].ny=dx;
     if (i>0) total += Math.hypot(pts[i].x-pts[i-1].x, pts[i].y-pts[i-1].y);
     pts[i].s = total;
   }
@@ -1165,7 +1186,7 @@ function buildCorners(){
       gap: 0.0042 + Math.random()*0.0026,
       speed: 0.00042 + Math.random()*0.00050,
       lane: (Math.random()*2-1),            // -1..1 across the ribbon
-      turns: 2.2 + Math.random()*2.0,       // how tightly it spirals
+      depth: Math.random()*2-1,             // fixed: near the viewer … far back
       phase: Math.random()*TAU,
       chars: [],
       swapAt: 0
@@ -1210,12 +1231,15 @@ function drawCorners(boost){
       const p = onSpine(u);
 
       // ribbon width: broad along the bottom run, tightening toward the corner
-      const width = 15 + 16*Math.sin(p.u*Math.PI);
+      const width = 13 + 14*Math.sin(p.u*Math.PI);
 
-      // --- the helix ---
-      const th = p.u*TAU*tr.turns + tr.phase + t*0.55;
-      const off = (tr.lane*0.55 + Math.cos(th)) * width;
-      const depth = Math.sin(th);                 // +1 front, -1 behind
+      // the strand keeps its own lane across the ribbon and only breathes
+      // gently — no spinning about the spine
+      const sway = Math.sin(p.u*TAU*0.9 + tr.phase + t*0.22) * 0.18;
+      const off = (tr.lane + sway) * width;
+
+      // depth comes from the lane, steady per strand, so nothing tumbles
+      const depth = tr.depth;
 
       const x = p.x + p.nx*off;
       const y = p.y + p.ny*off;
